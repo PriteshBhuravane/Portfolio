@@ -74,7 +74,7 @@ const Projects = () => {
       featured: true,
       status: "Completed",
       github: "https://github.com/PriteshBhuravane/Code-Editor.git",
-      demo: "https://e-learning-5uto.onrender.com",
+      demo: "https://code-editor-9wsg.vercel.app/",
     },
     {
       title: "GitHub Explorer",
@@ -87,7 +87,7 @@ const Projects = () => {
       featured: false,
       status: "Completed",
       github: "https://github.com/PriteshBhuravane/GitHub_Explorer.git",
-      demo: "https://e-learning-5uto.onrender.com",
+      demo: "https://git-hub-explorer-zeta.vercel.app/",
     },
     {
       title: "NewsPortal - React Platform",
@@ -100,7 +100,7 @@ const Projects = () => {
       featured: false,
       status: "Completed",
       github: "https://github.com/PriteshBhuravane/NewsPortal.git",
-      demo: "https://e-learning-5uto.onrender.com",
+      demo: "https://news-portal-rho-ecru.vercel.app/",
     },
   ];
 
