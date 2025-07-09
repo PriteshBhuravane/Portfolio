@@ -67,7 +67,7 @@ const Contact = () => {
 
   const handleResumeDownload = () => {
     const link = document.createElement("a");
-    link.href = "/PRITESH-SURESH-BHURAVANE-.pdf";
+    link.href = "/Pritesh_Bhuravane_Resume.pdf";
     link.download = "Pritesh_Bhuravane_Resume.pdf";
     document.body.appendChild(link);
     link.click();
