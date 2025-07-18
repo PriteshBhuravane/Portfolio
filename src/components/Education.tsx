@@ -61,6 +61,24 @@ const Education = () => {
 
   const certifications = [
     {
+      name: "Getting Started with Artificial Intelligence",
+      provider: "IBM SkillsBuild",
+      type: "AI & Machine Learning",
+      date: "2025",
+      description: "Introduction to AI fundamentals, applications, ethical considerations, and future industry impact through structured learning modules.",
+      skills: ["AI Basics", "Real-World Applications", "Ethical AI", "Future of AI"],
+      level: "Beginner"
+    },
+    {
+      name: "Introduction to Artificial Intelligence (MDL-211)",
+      provider: "IBM SkillsBuild",
+      type: "AI & Machine Learning",
+      date: "2025",
+      description: "Comprehensive training on core AI concepts, intelligent systems, problem-solving techniques, and introductory machine learning insights.",
+      skills: ["AI Fundamentals", "Intelligent Systems", "Problem-Solving with AI", "Applied Machine Learning"],
+      level: "Intermediate"
+    },
+    {
       name: "Beginning Python",
       provider: "Infosys Springboard",
       type: "Programming",
