@@ -68,12 +68,16 @@ const Skills = () => {
   ];
 
   const personalSkills = [
+    { name: "Resourceful & Deeply Passionate", icon: "🔥", level: 98 },
+    { name: "Unafraid of Challenges", icon: "💪", level: 95 },
     { name: "Strong Analytical & Problem-Solving", icon: "🧠", level: 95 },
     { name: "Adaptability & Quick Learning", icon: "⚡", level: 90 },
     { name: "Time Management & Organization", icon: "⏰", level: 88 },
     { name: "Effective Communication", icon: "💬", level: 85 },
     { name: "Team Collaboration", icon: "🤝", level: 92 },
-    { name: "Leadership", icon: "👑", level: 80 }
+    { name: "Leadership", icon: "👑", level: 80 },
+    { name: "Loyalty Runs Deep", icon: "❤️", level: 100 }
+
   ];
 
   return (
