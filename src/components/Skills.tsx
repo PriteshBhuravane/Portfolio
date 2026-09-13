@@ -11,6 +11,9 @@ import {
   Cpu,
   Layers,
   Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Plus,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -80,6 +83,17 @@ const Skills = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"model" | "cards" | "both">("both");
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    setVisibleCount(12);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setVisibleCount(12);
+  };
 
   const filteredSkills = useMemo(() => {
     return skillsData.filter((skill) => {
@@ -92,6 +106,12 @@ const Skills = () => {
       return matchesCategory && matchesSearch;
     });
   }, [activeCategory, searchQuery]);
+
+  const displayedSkills = useMemo(() => {
+    return filteredSkills.slice(0, visibleCount);
+  }, [filteredSkills, visibleCount]);
+
+  const hasMore = visibleCount < filteredSkills.length;
 
   return (
     <section
@@ -189,7 +209,7 @@ const Skills = () => {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveCategory(tab.id)}
+                      onClick={() => handleCategoryChange(tab.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 cursor-pointer ${
                         isSelected
                           ? "bg-purple-600 text-white shadow-lg shadow-purple-500/25 scale-105"
@@ -223,7 +243,7 @@ const Skills = () => {
                   type="text"
                   placeholder="Search skill, tag, tool..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className={`w-full pl-9 pr-4 py-2 text-xs rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     isDark
                       ? "bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500"
@@ -233,15 +253,30 @@ const Skills = () => {
               </div>
             </div>
 
+            {/* Empty Search State */}
+            {filteredSkills.length === 0 && (
+              <div className="text-center py-16 px-4">
+                <p className="text-sm text-slate-400 mb-3">No technical skills found matching &ldquo;{searchQuery}&rdquo;</p>
+                <button
+                  onClick={() => {
+                    handleSearchChange("");
+                    handleCategoryChange("all");
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 transition-colors cursor-pointer"
+                >
+                  Clear Filters & Show All Skills
+                </button>
+              </div>
+            )}
+
             {/* Skills Cards Grid with 3D Tilt */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filteredSkills.map((skill, idx) => (
+              {displayedSkills.map((skill, idx) => (
                 <motion.div
                   key={skill.name}
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: Math.min(idx * 0.04, 0.4) }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: Math.min(idx * 0.03, 0.3) }}
                 >
                   <TiltCard
                     tiltDegree={8}
@@ -301,6 +336,72 @@ const Skills = () => {
                 </motion.div>
               ))}
             </div>
+
+            {/* Load More / Pagination Controls */}
+            {filteredSkills.length > 12 && (
+              <div className="mt-10 flex flex-col items-center justify-center gap-3">
+                {/* Visual Count Meter */}
+                <div className="flex items-center gap-2.5 text-xs text-slate-400 font-mono">
+                  <span>
+                    Showing <strong className="text-purple-400 font-semibold">{displayedSkills.length}</strong> of{" "}
+                    <strong className="text-slate-200 font-semibold">{filteredSkills.length}</strong> skills
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                  <span>
+                    {hasMore
+                      ? `${filteredSkills.length - displayedSkills.length} more available`
+                      : "All skills displayed"}
+                  </span>
+                </div>
+
+                {/* Progress bar pill */}
+                <div className="w-48 h-1.5 rounded-full bg-slate-800 overflow-hidden mb-1">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+                    initial={false}
+                    animate={{
+                      width: `${(displayedSkills.length / filteredSkills.length) * 100}%`,
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {hasMore ? (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setVisibleCount((prev) => Math.min(prev + 6, filteredSkills.length))}
+                      className="px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-500/25 transition-all duration-200 cursor-pointer"
+                    >
+                      <Plus size={16} className="text-purple-200" />
+                      <span>Load More Skills (+6)</span>
+                      <ChevronDown size={16} className="text-purple-200 animate-bounce" />
+                    </motion.button>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+                        <CheckCircle size={14} />
+                        <span>All {filteredSkills.length} Skills Loaded</span>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => {
+                          setVisibleCount(12);
+                          const el = document.getElementById("skills");
+                          if (el) el.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-all cursor-pointer"
+                      >
+                        <ChevronUp size={14} />
+                        <span>Show Less (Back to 12)</span>
+                      </motion.button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </>
         )}
 

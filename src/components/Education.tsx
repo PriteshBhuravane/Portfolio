@@ -147,7 +147,7 @@ const certifications: Certification[] = [
 const Education = () => {
   const { isDark } = useTheme();
   const [activeCategory, setActiveCategory] = useState<"all" | "higher" | "schooling" | "certifications">("all");
-  const [viewMode, setViewMode] = useState<"cards" | "timeline">("cards");
+  const [viewMode, setViewMode] = useState<"timeline" | "cards">("timeline");
 
   const filteredEducation = educationData.filter((item) => {
     if (activeCategory === "all") return true;
@@ -240,32 +240,32 @@ const Education = () => {
             })}
           </div>
 
-          {/* View Toggle (Cards vs Timeline) when education is active */}
+          {/* View Toggle (Timeline vs Cards) when education is active */}
           {activeCategory !== "certifications" && (
             <div className={`inline-flex p-1 rounded-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
               <button
-                onClick={() => setViewMode("cards")}
-                aria-label="Cards view"
-                className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-purple-600 text-white shadow"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <LayoutGrid size={14} />
-                <span className="hidden sm:inline">Cards</span>
-              </button>
-              <button
                 onClick={() => setViewMode("timeline")}
                 aria-label="Timeline view"
-                className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                   viewMode === "timeline"
                     ? "bg-purple-600 text-white shadow"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 <GitCommit size={14} />
-                <span className="hidden sm:inline">Timeline</span>
+                <span>Timeline</span>
+              </button>
+              <button
+                onClick={() => setViewMode("cards")}
+                aria-label="Cards view"
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === "cards"
+                    ? "bg-purple-600 text-white shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <LayoutGrid size={14} />
+                <span>Cards</span>
               </button>
             </div>
           )}

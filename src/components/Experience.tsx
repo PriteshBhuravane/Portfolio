@@ -13,6 +13,8 @@ import {
   Play,
   RotateCcw,
   Sparkles,
+  GitCommit,
+  LayoutGrid,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -88,6 +90,7 @@ const experiences: ExperienceItem[] = [
 
 const Experience = () => {
   const { isDark } = useTheme();
+  const [viewMode, setViewMode] = useState<"timeline" | "cards">("timeline");
   const [activeTab, setActiveTab] = useState<string>(experiences[0].id);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simStep, setSimStep] = useState(0);
@@ -141,9 +144,243 @@ const Experience = () => {
           <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}>
             Hands-on expertise in Linux server administration, DevOps deployment automation, and backend engineering at Pleximus Inc.
           </p>
+
+          {/* View Toggle (Timeline vs Cards) */}
+          <div className="flex items-center justify-center mt-6">
+            <div className={`inline-flex p-1 rounded-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <button
+                onClick={() => setViewMode("timeline")}
+                aria-label="Timeline view"
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === "timeline"
+                    ? "bg-purple-600 text-white shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <GitCommit size={14} />
+                <span>Timeline</span>
+              </button>
+              <button
+                onClick={() => setViewMode("cards")}
+                aria-label="Cards view"
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === "cards"
+                    ? "bg-purple-600 text-white shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <LayoutGrid size={14} />
+                <span>Cards</span>
+              </button>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Experience Timeline Grid */}
+        {/* View Mode: Timeline View (Default) */}
+        {viewMode === "timeline" && (
+          <motion.div
+            key="experience-timeline"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-4xl mx-auto relative before:absolute before:inset-0 before:left-4 sm:before:left-8 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-purple-500 before:via-blue-500 before:to-emerald-500 space-y-12 pl-12 sm:pl-20"
+          >
+            {experiences.map((exp, index) => {
+              const Icon = exp.icon;
+              return (
+                <motion.div
+                  key={exp.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.15 }}
+                  className="relative"
+                >
+                  {/* Timeline Node Pin */}
+                  <div className="absolute -left-12 sm:-left-20 top-2 w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-900 border-2 border-purple-400 text-purple-400 flex items-center justify-center shadow-lg shadow-purple-500/30 z-10">
+                    <Icon size={18} />
+                  </div>
+
+                  {/* Experience Card */}
+                  <div
+                    className={`p-6 sm:p-8 rounded-3xl border transition-all duration-300 relative overflow-hidden shadow-xl ${
+                      isDark
+                        ? "bg-slate-800/70 border-slate-700/80 shadow-black/30"
+                        : "bg-white border-slate-200/90 shadow-slate-200/50"
+                    }`}
+                  >
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-200/20">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                          <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                            {exp.role}
+                          </h3>
+                          <Badge
+                            variant="secondary"
+                            className={
+                              exp.isCurrent
+                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                            }
+                          >
+                            {exp.badge}
+                          </Badge>
+                          {exp.isCurrent && (
+                            <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 ml-1">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              Active Role
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400">
+                          <span className="font-semibold text-purple-400">{exp.company}</span>
+                          <span className="flex items-center gap-1">
+                            <MapPin size={13} />
+                            {exp.location}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar size={13} />
+                            {exp.period}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Summary */}
+                    <div className="py-4">
+                      <p className={`text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                        {exp.summary}
+                      </p>
+                    </div>
+
+                    {/* Responsibilities */}
+                    <div className="mb-5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                        <Layers size={14} />
+                        Key Responsibilities & Scope
+                      </h4>
+                      <div className="space-y-2.5">
+                        {exp.responsibilities.map((resp, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm">
+                            <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <span className={isDark ? "text-slate-300" : "text-slate-700"}>
+                              {resp}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Core Deliverables */}
+                    <div className="mb-5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-1.5">
+                        <GitBranch size={14} />
+                        Core Deliverables
+                      </h4>
+                      <div className="grid sm:grid-cols-3 gap-2">
+                        {exp.highlights.map((highlight, idx) => (
+                          <div
+                            key={idx}
+                            className={`text-xs p-2.5 rounded-xl border ${
+                              isDark
+                                ? "bg-slate-900/60 border-slate-700 text-slate-300"
+                                : "bg-slate-50 border-slate-200 text-slate-700 shadow-sm"
+                            }`}
+                          >
+                            • {highlight}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Interactive Deployment Test inside Current Role */}
+                    {exp.isCurrent && (
+                      <div
+                        className={`p-4 rounded-2xl border mb-5 ${
+                          isDark ? "bg-slate-900/80 border-slate-800" : "bg-purple-50/60 border-purple-200"
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                              <Activity size={14} className="animate-pulse" />
+                              Interactive DevOps Zero-Downtime Pipeline
+                            </div>
+                            <p className="text-xs text-slate-400">
+                              Trigger live simulated CI/CD build, GitLab fetch, hot Nginx reload, and systemd verification.
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={runDeploymentSimulation}
+                            disabled={isSimulating}
+                            className="text-xs bg-purple-600 hover:bg-purple-500 text-white font-mono flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                          >
+                            {isSimulating ? (
+                              <>
+                                <RotateCcw size={13} className="animate-spin" />
+                                <span>Deploying...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Play size={13} />
+                                <span>Test Deployment</span>
+                              </>
+                            )}
+                          </Button>
+                        </div>
+
+                        {simStep > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="mt-3 p-3 rounded-xl bg-slate-950 text-[11px] font-mono border border-slate-800 space-y-1"
+                          >
+                            {simStep >= 1 && <div className="text-blue-400">➜ Pulling latest commit from GitLab...</div>}
+                            {simStep >= 2 && <div className="text-amber-400">➜ Building assets & running migrations...</div>}
+                            {simStep >= 3 && <div className="text-cyan-400">➜ Hot reload Nginx & restart systemd...</div>}
+                            {simStep >= 4 && (
+                              <div className="text-emerald-400 font-bold flex items-center gap-1">
+                                <Sparkles size={12} />
+                                ✔ Deployment complete: 0ms downtime!
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Tech stack pills */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+                        Technologies & Workflows
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.techStack.map((tech) => (
+                          <span
+                            key={tech}
+                            className={`text-xs px-3 py-1 rounded-xl font-medium border transition-all duration-200 hover:scale-105 ${
+                              isDark
+                                ? "bg-slate-900/80 border-slate-700 text-slate-200 hover:border-purple-400"
+                                : "bg-slate-100 border-slate-200 text-slate-800 hover:border-purple-400"
+                            }`}
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+
+        {/* View Mode: Split Cards View (Alternative) */}
+        {viewMode === "cards" && (
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Left Navigation Tabs */}
           <div className="lg:col-span-4 space-y-4">
@@ -421,6 +658,7 @@ const Experience = () => {
             </AnimatePresence>
           </div>
         </div>
+        )}
       </div>
     </section>
   );
