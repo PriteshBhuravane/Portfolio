@@ -90,7 +90,7 @@ const experiences: ExperienceItem[] = [
 
 const Experience = () => {
   const { isDark } = useTheme();
-  const [viewMode, setViewMode] = useState<"timeline" | "cards">("timeline");
+  const [viewMode, setViewMode] = useState<"timeline" | "cards">("cards");
   const [activeTab, setActiveTab] = useState<string>(experiences[0].id);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simStep, setSimStep] = useState(0);

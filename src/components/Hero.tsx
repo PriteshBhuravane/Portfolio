@@ -116,7 +116,7 @@ const Hero = () => {
                 </span>
                 <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider">SYS: ONLINE</span>
                 <span className="text-slate-500">•</span>
-                <span className="text-slate-400 font-medium hidden sm:inline">pleximus-node-01</span>
+                {/* <span className="text-slate-400 font-medium hidden sm:inline">pleximus-node-01</span> */}
                 <span className="text-slate-500 hidden sm:inline">•</span>
                 <span className="text-purple-500 dark:text-purple-400 font-semibold">99.98% Uptime</span>
                 <span className="text-slate-500 hidden md:inline">•</span>
@@ -127,7 +127,7 @@ const Hero = () => {
             {/* Interactive Shell Prompt Line */}
             <div className="flex items-center gap-2 justify-center lg:justify-start font-mono text-xs text-slate-400 bg-slate-900/50 dark:bg-slate-950/70 px-3.5 py-1.5 rounded-xl border border-slate-800/80 w-fit mx-auto lg:mx-0 shadow-sm">
               <Terminal size={13} className="text-emerald-400" />
-              <span className="text-emerald-400 font-bold">pritesh@pleximus</span>
+              <span className="text-emerald-400 font-bold">pritesh@Devops</span>
               <span className="text-slate-500">:</span>
               <span className="text-blue-400">~/portfolio</span>
               <span className="text-slate-500">$</span>
