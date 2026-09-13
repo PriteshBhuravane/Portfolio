@@ -291,9 +291,9 @@ const Hero = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-6 relative"
+            className="lg:col-span-6 relative pt-12 sm:pt-14"
           >
-            {/* Floating Tech Badges around the right container */}
+            {/* Floating Tech Badges around the right container with Laravel & PHP elevated cleanly above */}
             <AnimatedTechBadges
               activeViewMode={rightViewMode}
               onSelectBadge={(techId) => {
@@ -302,9 +302,9 @@ const Hero = () => {
               }}
             />
 
-            {/* Switcher Bar on Top of the interactive window */}
+            {/* View Mode Switching Controls placed above terminal/orbit window */}
             <div className="flex items-center justify-between mb-3 px-1">
-              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-800/60 border border-slate-700/60 backdrop-blur-md shadow-md">
+              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md shadow-lg">
                 <button
                   type="button"
                   onClick={() => setRightViewMode("terminal")}
@@ -326,7 +326,7 @@ const Hero = () => {
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <Rotate3d size={14} />
+                  <Rotate3d size={14} className={rightViewMode === "3d-orbit" ? "animate-spin-slow" : ""} />
                   <span>3D Tech Orbit</span>
                 </button>
               </div>
@@ -334,7 +334,7 @@ const Hero = () => {
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-purple-400 font-mono hidden sm:flex items-center gap-1.5 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  {rightViewMode === "terminal" ? "Interactive Shell" : "3D Constellation"}
+                  {rightViewMode === "terminal" ? "Interactive Shell" : "3D Celestial Orbit"}
                 </span>
               </div>
             </div>

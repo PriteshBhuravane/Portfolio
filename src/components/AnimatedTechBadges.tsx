@@ -1,7 +1,8 @@
+import React from "react";
 import { motion } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TechIcon, TechIconName } from "./TechIcons";
-import { Sparkles, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 export interface TechBadgeConfig {
   id: string;
@@ -17,7 +18,7 @@ export interface TechBadgeConfig {
   targetTechId: string;
 }
 
-export const HERO_TECH_BADGES: TechBadgeConfig[] = [
+export const HERO_SATELLITE_BADGES: TechBadgeConfig[] = [
   {
     id: "laravel-php",
     label: "Laravel & PHP",
@@ -26,9 +27,9 @@ export const HERO_TECH_BADGES: TechBadgeConfig[] = [
     secondaryIcon: "php",
     color: "#FF2D20",
     glowColor: "rgba(255, 45, 32, 0.4)",
-    // Positioned safely above-left of the terminal so it does NOT collide with the view switcher
-    positionClass: "-top-8 sm:-top-10 -left-2 sm:-left-6 lg:-left-10",
-    delay: 0,
+    // Positioned cleanly above the terminal switcher so it never overlaps
+    positionClass: "-top-14 sm:-top-16 lg:-top-16 -left-2 sm:-left-4 lg:-left-6",
+    delay: 0.05,
     category: "backend",
     targetTechId: "laravel",
   },
@@ -40,8 +41,9 @@ export const HERO_TECH_BADGES: TechBadgeConfig[] = [
     secondaryIcon: "flutter",
     color: "#61DAFB",
     glowColor: "rgba(97, 218, 251, 0.4)",
-    positionClass: "-top-8 sm:-top-10 -right-2 sm:-right-6 lg:-right-10",
-    delay: 0.25,
+    // Positioned cleanly above the terminal top right
+    positionClass: "-top-14 sm:-top-16 lg:-top-16 -right-2 sm:-right-4 lg:-right-6",
+    delay: 0.15,
     category: "frontend",
     targetTechId: "react",
   },
@@ -53,8 +55,8 @@ export const HERO_TECH_BADGES: TechBadgeConfig[] = [
     secondaryIcon: "docker",
     color: "#10B981",
     glowColor: "rgba(16, 185, 129, 0.4)",
-    positionClass: "-bottom-8 sm:-bottom-10 -left-2 sm:-left-6 lg:-left-10",
-    delay: 0.5,
+    positionClass: "-bottom-6 sm:-bottom-8 -left-2 sm:-left-4 lg:-left-6",
+    delay: 0.25,
     category: "devops",
     targetTechId: "linux",
   },
@@ -66,8 +68,8 @@ export const HERO_TECH_BADGES: TechBadgeConfig[] = [
     secondaryIcon: "mongo",
     color: "#F59E0B",
     glowColor: "rgba(245, 158, 11, 0.4)",
-    positionClass: "-bottom-8 sm:-bottom-10 -right-2 sm:-right-6 lg:-right-10",
-    delay: 0.75,
+    positionClass: "-bottom-6 sm:-bottom-8 -right-2 sm:-right-4 lg:-right-6",
+    delay: 0.35,
     category: "database",
     targetTechId: "mysql",
   },
@@ -80,28 +82,27 @@ interface AnimatedTechBadgesProps {
 
 export const AnimatedTechBadges: React.FC<AnimatedTechBadgesProps> = ({
   onSelectBadge,
-  activeViewMode,
 }) => {
   const { isDark } = useTheme();
 
   return (
-    <div className="absolute inset-0 pointer-events-none hidden md:block">
-      {HERO_TECH_BADGES.map((badge, idx) => {
+    <div className="absolute inset-0 pointer-events-none hidden lg:block z-20">
+      {HERO_SATELLITE_BADGES.map((badge, idx) => {
         return (
           <motion.div
             key={badge.id}
-            className={`absolute ${badge.positionClass} z-20 pointer-events-auto`}
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            className={`absolute ${badge.positionClass} pointer-events-auto`}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{
               opacity: 1,
               scale: 1,
-              y: [0, -8, 0],
+              y: [0, -7, 0],
             }}
             transition={{
-              opacity: { duration: 0.5, delay: badge.delay },
-              scale: { duration: 0.5, delay: badge.delay },
+              opacity: { duration: 0.4, delay: badge.delay },
+              scale: { duration: 0.4, delay: badge.delay },
               y: {
-                duration: 4.5 + idx * 0.4,
+                duration: 4.2 + idx * 0.4,
                 repeat: Infinity,
                 ease: "easeInOut",
                 delay: badge.delay,
@@ -114,7 +115,7 @@ export const AnimatedTechBadges: React.FC<AnimatedTechBadgesProps> = ({
               type="button"
               onClick={() => onSelectBadge?.(badge.targetTechId)}
               title={`Click to inspect ${badge.label} in 3D Tech Orbit`}
-              className={`group text-left p-2.5 sm:p-3 rounded-2xl border backdrop-blur-md shadow-xl flex items-center gap-3 transition-all duration-300 cursor-pointer relative overflow-hidden ${
+              className={`group text-left p-2 sm:p-2.5 rounded-2xl border backdrop-blur-md shadow-xl flex items-center gap-2.5 transition-all duration-300 cursor-pointer relative overflow-hidden ${
                 isDark
                   ? "bg-slate-900/90 border-slate-700/80 shadow-black/50 text-slate-100 hover:border-white/50"
                   : "bg-white/95 border-slate-200/90 shadow-slate-300/60 text-slate-800 hover:border-slate-400"
@@ -130,19 +131,19 @@ export const AnimatedTechBadges: React.FC<AnimatedTechBadgesProps> = ({
               <div className="relative flex items-center -space-x-1.5 flex-shrink-0">
                 <div
                   style={{ borderColor: badge.color }}
-                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center shadow-md ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl border flex items-center justify-center shadow-md ${
                     isDark ? "bg-slate-950" : "bg-slate-100"
                   }`}
                 >
-                  <TechIcon name={badge.primaryIcon} size={18} />
+                  <TechIcon name={badge.primaryIcon} size={16} />
                 </div>
                 {badge.secondaryIcon && (
                   <div
-                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg border border-slate-700 flex items-center justify-center shadow-sm -mt-3 ${
+                    className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border border-slate-700 flex items-center justify-center shadow-sm -mt-2.5 ${
                       isDark ? "bg-slate-900" : "bg-white"
                     }`}
                   >
-                    <TechIcon name={badge.secondaryIcon} size={14} />
+                    <TechIcon name={badge.secondaryIcon} size={12} />
                   </div>
                 )}
               </div>
@@ -154,14 +155,14 @@ export const AnimatedTechBadges: React.FC<AnimatedTechBadgesProps> = ({
                     {badge.label}
                   </span>
                   <span
-                    className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex items-center gap-0.5 ${
+                    className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider flex items-center gap-0.5 ${
                       isDark
                         ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
                         : "bg-purple-100 text-purple-700 border border-purple-200"
                     }`}
                   >
-                    <span>3D Orbit</span>
-                    <ArrowUpRight size={10} />
+                    <span>3D</span>
+                    <ArrowUpRight size={9} />
                   </span>
                 </div>
                 <div className="text-[10px] text-slate-400 leading-tight mt-0.5">

@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Rotate3d,
   Sparkles,
-  Info,
-  CheckCircle,
   Play,
   Pause,
   Compass,
   Zap,
   Layers,
   ArrowUpRight,
+  ExternalLink,
+  CheckCircle2,
+  Code2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -26,19 +27,14 @@ export interface TechNodeItem {
   experience: string;
   description: string;
   tools: string[];
-  // Initial 3D coordinates
-  x: number;
-  y: number;
-  z: number;
-  // Dynamic projected properties
-  px?: number;
-  py?: number;
-  scale?: number;
-  z2?: number;
-  alpha?: number;
+  ring: 1 | 2 | 3; // 1: Inner (Core Backend), 2: Middle (DevOps & Cloud), 3: Outer (Frontend, AI & Mobile)
+  baseAngle: number; // Base angular offset on the ring in radians
 }
 
-export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
+export const ORBIT_TECHNOLOGIES: TechNodeItem[] = [
+  // -------------------------------------------------------------
+  // RING 1: Core Backend & Relational Database (Inner Orbit - 5 nodes)
+  // -------------------------------------------------------------
   {
     id: "laravel",
     name: "Laravel Framework",
@@ -47,9 +43,11 @@ export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
     category: "backend",
     brandColor: "#FF2D20",
     proficiency: 95,
-    experience: "Primary Framework @ Pleximus",
-    description: "Eloquent ORM, robust REST API microservices, middleware routing, queue workers, migrations, and automated security policies.",
+    experience: "Primary Framework @ Pleximus Techno",
+    description: "Architecting enterprise REST API microservices, Eloquent ORM relations, middleware pipelines, Artisan commands, and secure auth.",
     tools: ["Laravel 10/11", "Eloquent", "Artisan", "Sanctum", "Blade"],
+    ring: 1,
+    baseAngle: 0,
   },
   {
     id: "php",
@@ -60,32 +58,10 @@ export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
     brandColor: "#777BB4",
     proficiency: 94,
     experience: "Enterprise Core @ Pleximus",
-    description: "Modern PHP 8+ object-oriented design, RESTful web services, composer package management, PDO transactions, and secure auth.",
+    description: "Modern PHP 8+ object-oriented programming, PSR standards, composer package management, PDO transactions, and high-load web services.",
     tools: ["PHP 8.2", "Composer", "PDO", "PSR Standards", "OOP"],
-  },
-  {
-    id: "docker",
-    name: "Docker & Containers",
-    shortLabel: "Docker",
-    iconName: "docker",
-    category: "devops",
-    brandColor: "#2496ED",
-    proficiency: 90,
-    experience: "Production & Pleximus Inc",
-    description: "Multi-stage Dockerfiles, image optimization, container isolation, docker-compose orchestration, and reproducible deployments.",
-    tools: ["Docker Engine", "Docker Compose", "Multi-stage Builds", "Registry"],
-  },
-  {
-    id: "linux",
-    name: "Linux & Ubuntu Server",
-    shortLabel: "Linux",
-    iconName: "linux",
-    category: "devops",
-    brandColor: "#E95420",
-    proficiency: 94,
-    experience: "Production Server Admin",
-    description: "Ubuntu Server administration, SSH hardening, systemd services, UFW firewalls, cron tasks, and bash automation scripts.",
-    tools: ["Ubuntu 22.04 LTS", "Bash", "systemctl", "UFW", "journalctl"],
+    ring: 1,
+    baseAngle: (Math.PI * 2) / 5,
   },
   {
     id: "mysql",
@@ -95,45 +71,25 @@ export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
     category: "database",
     brandColor: "#00758F",
     proficiency: 92,
-    experience: "Schema Modeling & Optimization",
-    description: "ACID compliance, relational schema architecture, complex joins, indexing strategies, query execution plans, and transactions.",
-    tools: ["MySQL 8.0", "Indexes", "Foreign Keys", "Stored Procedures"],
+    experience: "Schema Modeling & Query Optimization",
+    description: "ACID compliance, relational schema architecture, complex joins, composite indexing strategies, and automated backups.",
+    tools: ["MySQL 8.0", "Indexes", "Foreign Keys", "Transactions"],
+    ring: 1,
+    baseAngle: ((Math.PI * 2) / 5) * 2,
   },
   {
-    id: "nginx",
-    name: "Nginx Web Server",
-    shortLabel: "Nginx",
-    iconName: "nginx",
-    category: "devops",
-    brandColor: "#009639",
-    proficiency: 92,
-    experience: "Production Sysadmin",
-    description: "Reverse proxy, SSL/TLS Let's Encrypt certificates, load balancing, Gzip compression, rate limiting, and virtual host routing.",
-    tools: ["Reverse Proxy", "SSL/TLS", "gzip", "Upstream Load Balancing"],
-  },
-  {
-    id: "react",
-    name: "React.js",
-    shortLabel: "React",
-    iconName: "react",
-    category: "frontend",
-    brandColor: "#61DAFB",
-    proficiency: 92,
-    experience: "Full-Stack Frontends",
-    description: "Modern component architecture, custom hooks, reactive state engines, Tailwind CSS styling, Vite tooling, and micro-interactions.",
-    tools: ["React 18", "Hooks", "Context API", "Vite", "SPA"],
-  },
-  {
-    id: "mongo",
-    name: "MongoDB & NoSQL",
-    shortLabel: "MongoDB",
-    iconName: "mongo",
+    id: "redis",
+    name: "Redis In-Memory Caching",
+    shortLabel: "Redis",
+    iconName: "redis",
     category: "database",
-    brandColor: "#47A248",
-    proficiency: 88,
-    experience: "Document Modeling & Mongoose",
-    description: "Flexible JSON/BSON document collections, aggregation pipelines, schema validation, indexing, and high-volume data ingestion.",
-    tools: ["MongoDB Atlas", "Mongoose", "Aggregation Pipeline", "Indexes"],
+    brandColor: "#DC382D",
+    proficiency: 86,
+    experience: "High-Performance Caching",
+    description: "Sub-millisecond key-value caching, session storage persistence, distributed locks, and pub/sub message brokering.",
+    tools: ["Redis 7", "In-Memory Caching", "Session Store", "Key-Value"],
+    ring: 1,
+    baseAngle: ((Math.PI * 2) / 5) * 3,
   },
   {
     id: "node",
@@ -142,70 +98,118 @@ export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
     iconName: "node",
     category: "backend",
     brandColor: "#339933",
-    proficiency: 90,
-    experience: "REST API Microservices",
-    description: "High-throughput non-blocking asynchronous event loops, Express.js routing, JWT token auth, and backend integrations.",
-    tools: ["Node.js", "Express.js", "REST APIs", "JWT", "npm"],
+    proficiency: 89,
+    experience: "Microservices & Event Loop",
+    description: "Asynchronous runtime, Express microservices, npm ecosystem, real-time WebSocket communication, and RESTful pipelines.",
+    tools: ["Node.js 20", "Express", "REST APIs", "npm"],
+    ring: 1,
+    baseAngle: ((Math.PI * 2) / 5) * 4,
   },
+
+  // -------------------------------------------------------------
+  // RING 2: DevOps, Linux & Cloud Infrastructure (Middle Orbit - 5 nodes)
+  // -------------------------------------------------------------
   {
-    id: "python",
-    name: "Python & Research AI",
-    shortLabel: "Python",
-    iconName: "python",
-    category: "backend",
-    brandColor: "#3776AB",
-    proficiency: 88,
-    experience: "IJSRST Research Paper & Scripts",
-    description: "Core Python scripting, image feature fusion (SkinFusion-Net), research automation, OpenCV manipulation, and data analysis.",
-    tools: ["Python 3", "OpenCV", "TensorFlow", "Pandas", "Scikit-Learn"],
-  },
-  {
-    id: "git",
-    name: "Git & GitLab CI/CD",
-    shortLabel: "Git",
-    iconName: "git",
+    id: "docker",
+    name: "Docker Containers",
+    shortLabel: "Docker",
+    iconName: "docker",
     category: "devops",
-    brandColor: "#F05032",
-    proficiency: 92,
-    experience: "Team Collaboration & Releases",
-    description: "Trunk-based and feature branching, merge requests, code reviews, release tags, and automated continuous delivery pipelines.",
-    tools: ["Git", "GitLab CI", "GitHub Actions", "Semantic Releases"],
+    brandColor: "#2496ED",
+    proficiency: 90,
+    experience: "Containerization & Multi-Stage Builds",
+    description: "Custom Dockerfile recipes, multi-stage production builds, docker-compose orchestration, volume persistence, and isolated networks.",
+    tools: ["Docker", "Docker Compose", "Multi-stage Builds", "Container Registry"],
+    ring: 2,
+    baseAngle: Math.PI / 5,
   },
   {
-    id: "redis",
-    name: "Redis Caching & In-Memory",
-    shortLabel: "Redis",
-    iconName: "redis",
-    category: "database",
-    brandColor: "#DC382D",
-    proficiency: 86,
-    experience: "High-Performance Caching",
-    description: "Key-value store caching, sub-millisecond response acceleration, session storage, and pub/sub message brokering.",
-    tools: ["Redis 7", "In-Memory Caching", "Session Store", "Key-Value"],
+    id: "linux",
+    name: "Linux Server Administration",
+    shortLabel: "Linux",
+    iconName: "linux",
+    category: "devops",
+    brandColor: "#E95420",
+    proficiency: 95,
+    experience: "Primary OS Administration @ Pleximus",
+    description: "Ubuntu/Debian server hardening, systemd daemon management, bash automation scripts, user permissions, and SSH tunnel security.",
+    tools: ["Ubuntu Server", "Systemd", "Bash Shell", "UFW Firewall", "SSH"],
+    ring: 2,
+    baseAngle: Math.PI / 5 + (Math.PI * 2) / 5,
+  },
+  {
+    id: "nginx",
+    name: "Nginx Reverse Proxy",
+    shortLabel: "Nginx",
+    iconName: "nginx",
+    category: "devops",
+    brandColor: "#009639",
+    proficiency: 92,
+    experience: "Production Ingress & SSL",
+    description: "High-performance reverse proxy routing, SSL/TLS Let's Encrypt termination, gzip/brotli compression, load balancing, and rate limiting.",
+    tools: ["Nginx", "Reverse Proxy", "Certbot SSL", "Upstream Balancer"],
+    ring: 2,
+    baseAngle: Math.PI / 5 + ((Math.PI * 2) / 5) * 2,
   },
   {
     id: "aws",
-    name: "AWS & Cloud Services",
+    name: "AWS Cloud Infrastructure",
     shortLabel: "AWS",
     iconName: "aws",
     category: "devops",
     brandColor: "#FF9900",
     proficiency: 84,
-    experience: "Cloud Infrastructure",
-    description: "AWS EC2 instances, S3 object storage for assets, Route 53 DNS records, and IAM security permissions.",
-    tools: ["AWS EC2", "S3 Storage", "Route 53", "IAM", "VPC"],
+    experience: "Cloud Compute & Deployments",
+    description: "Amazon EC2 instance configuration, S3 secure asset storage buckets, IAM role permissions, security groups, and VPC networking.",
+    tools: ["AWS EC2", "Amazon S3", "IAM", "VPC", "Route 53"],
+    ring: 2,
+    baseAngle: Math.PI / 5 + ((Math.PI * 2) / 5) * 3,
+  },
+  {
+    id: "git",
+    name: "Git Version Control & CI/CD",
+    shortLabel: "Git",
+    iconName: "git",
+    category: "devops",
+    brandColor: "#F05032",
+    proficiency: 93,
+    experience: "Trunk Development & GitHub Actions",
+    description: "Git flow branching, merge conflict resolution, interactive rebase, and automated GitHub Actions CI/CD deployment pipelines.",
+    tools: ["Git", "GitHub Actions", "Webhooks", "CI/CD Pipelines"],
+    ring: 2,
+    baseAngle: Math.PI / 5 + ((Math.PI * 2) / 5) * 4,
+  },
+
+  // -------------------------------------------------------------
+  // RING 3: Frontend, AI & Mobile (Outer Orbit - 6 nodes)
+  // -------------------------------------------------------------
+  {
+    id: "react",
+    name: "React & Next.js Ecosystem",
+    shortLabel: "React",
+    iconName: "react",
+    category: "frontend",
+    brandColor: "#61DAFB",
+    proficiency: 91,
+    experience: "Modern Interactive Frontends",
+    description: "Custom React hooks, state management, component architecture, Tailwind styling, and responsive web applications.",
+    tools: ["React 18", "Hooks", "Context API", "Vite", "SPA"],
+    ring: 3,
+    baseAngle: 0,
   },
   {
     id: "typescript",
-    name: "TypeScript & JavaScript",
+    name: "TypeScript",
     shortLabel: "TypeScript",
     iconName: "typescript",
     category: "frontend",
     brandColor: "#3178C6",
-    proficiency: 90,
-    experience: "Type-Safe Full-Stack",
-    description: "Strict compile-time type safety, interfaces, generics, modern ES2024 features, and robust frontend/backend contracts.",
-    tools: ["TypeScript 5", "ESNext", "Interfaces", "Generics"],
+    proficiency: 88,
+    experience: "Type-Safe Application Engineering",
+    description: "Static type verification, interfaces, generic programming, and compile-time bug prevention across full-stack applications.",
+    tools: ["TypeScript 5", "Generics", "Type Guards", "Interfaces"],
+    ring: 3,
+    baseAngle: (Math.PI * 2) / 6,
   },
   {
     id: "tailwind",
@@ -214,28 +218,60 @@ export const ORBIT_TECHNOLOGIES: Omit<TechNodeItem, "x" | "y" | "z">[] = [
     iconName: "tailwind",
     category: "frontend",
     brandColor: "#06B6D4",
-    proficiency: 94,
-    experience: "Responsive Systems",
-    description: "Utility-first modern design systems, custom color palettes, fluid responsive breakpoints, dark/light themes, and CSS animations.",
-    tools: ["Tailwind 3/4", "Responsive Design", "Flex/Grid", "Animation"],
+    proficiency: 95,
+    experience: "Design Systems & Responsive UI",
+    description: "Utility-first design architecture, custom design tokens, dark/light theme switching, and responsive layouts.",
+    tools: ["Tailwind CSS 3/4", "Flexbox/Grid", "Transitions", "Dark Mode"],
+    ring: 3,
+    baseAngle: ((Math.PI * 2) / 6) * 2,
+  },
+  {
+    id: "python",
+    name: "Python & Machine Learning",
+    shortLabel: "Python",
+    iconName: "python",
+    category: "backend",
+    brandColor: "#3776AB",
+    proficiency: 86,
+    experience: "Research & SkinFusion-Net ML Paper",
+    description: "Python automation scripts, data preprocessing pipelines, and deep learning architectures used in SkinFusion-Net (IJSRST published).",
+    tools: ["Python 3.11", "NumPy", "OpenCV", "TensorFlow / Keras"],
+    ring: 3,
+    baseAngle: ((Math.PI * 2) / 6) * 3,
+  },
+  {
+    id: "mongo",
+    name: "MongoDB NoSQL DB",
+    shortLabel: "MongoDB",
+    iconName: "mongo",
+    category: "database",
+    brandColor: "#47A248",
+    proficiency: 85,
+    experience: "Document Modeling & Aggregation",
+    description: "Flexible JSON-like document schema modeling, aggregation pipelines, indexed collections, and replica set synchronization.",
+    tools: ["MongoDB 7", "Aggregation", "Indexes", "Mongoose"],
+    ring: 3,
+    baseAngle: ((Math.PI * 2) / 6) * 4,
   },
   {
     id: "flutter",
-    name: "Flutter & Mobile Apps",
+    name: "Flutter & Dart Mobile",
     shortLabel: "Flutter",
     iconName: "flutter",
     category: "mobile",
     brandColor: "#02569B",
-    proficiency: 86,
-    experience: "Cross-Platform Pet Adoption App",
-    description: "Dart language, reactive widget trees, state management, Android app builds, and smooth 60 FPS mobile layouts.",
-    tools: ["Flutter SDK", "Dart", "Android Studio", "Material Design"],
+    proficiency: 82,
+    experience: "Cross-Platform Mobile UI",
+    description: "Cross-platform Android and iOS mobile application development, state management, REST API client integration, and native device APIs.",
+    tools: ["Flutter", "Dart", "Provider / Bloc", "REST Client"],
+    ring: 3,
+    baseAngle: ((Math.PI * 2) / 6) * 5,
   },
 ];
 
 interface InteractiveTechOrbitProps {
-  selectedTechId?: string | null;
-  onSelectTech?: (techId: string) => void;
+  selectedTechId?: string;
+  onSelectTech?: (tech: TechNodeItem) => void;
 }
 
 export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
@@ -246,71 +282,55 @@ export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [selectedNode, setSelectedNode] = useState<TechNodeItem | null>(null);
+  // Map of DOM element refs for hardware-accelerated 60 FPS transform updating
+  const nodeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  const [selectedNode, setSelectedNode] = useState<TechNodeItem>(() => {
+    return (
+      ORBIT_TECHNOLOGIES.find((n) => n.id === selectedTechId) ||
+      ORBIT_TECHNOLOGIES[0]
+    );
+  });
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
-  const [projectedNodes, setProjectedNodes] = useState<TechNodeItem[]>([]);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
-  // 3D Rotation angles & tracking
-  const rotationRef = useRef({ x: 0.22, y: 0.38 });
-  const velocityRef = useRef({ x: 0.0018, y: 0.0035 });
-  const mousePosRef = useRef({ x: 0, y: 0, isDown: false, hasMoved: false });
-  const nodes3DRef = useRef<TechNodeItem[]>([]);
+  // Orbital revolution angles for each ring (Keplerian differential speed)
+  const ringAnglesRef = useRef({ 1: 0, 2: 0, 3: 0 });
 
-  // Smooth target rotation towards selected node
-  const targetRotationRef = useRef<{ x: number; y: number } | null>(null);
+  // 3D Camera Rotation angles & drag state
+  // Default camera pitch = ~22 degrees down-angle for optimal 3D ellipse view
+  const DEFAULT_PITCH = 0.38;
+  const cameraRef = useRef({ pitch: DEFAULT_PITCH, yaw: 0 });
+  const mouseStateRef = useRef({
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    velYaw: 0,
+    velPitch: 0,
+    hasDragged: false,
+  });
 
-  // Initialize spherical Fibonacci distribution with optimal radius (145px) to prevent border clipping
-  useEffect(() => {
-    const N = ORBIT_TECHNOLOGIES.length;
-    const radius = 145; // Balanced sphere radius for perfect padding inside 420px height
-    const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+  // Target camera orientation for smooth auto-focusing on selected node
+  const targetCameraYawRef = useRef<number | null>(null);
 
-    const nodes: TechNodeItem[] = ORBIT_TECHNOLOGIES.map((tech, i) => {
-      const y = 1 - (i / (N - 1)) * 2; // -1 to 1
-      const radiusAtY = Math.sqrt(1 - y * y);
-      const theta = phi * i;
-
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
-
-      return {
-        ...tech,
-        x: x * radius,
-        y: y * radius,
-        z: z * radius,
-      };
-    });
-
-    nodes3DRef.current = nodes;
-    // Default selected node is Laravel or matching prop
-    const initial = selectedTechId
-      ? nodes.find((n) => n.id === selectedTechId) || nodes[0]
-      : nodes[0];
-    setSelectedNode(initial);
-  }, [selectedTechId]);
-
-  // When external selectedTechId changes, rotate smoothly to face that node
+  // Synchronize external prop with selected node
   useEffect(() => {
     if (!selectedTechId) return;
-    const target = nodes3DRef.current.find((n) => n.id === selectedTechId);
+    const target = ORBIT_TECHNOLOGIES.find((n) => n.id === selectedTechId);
     if (!target) return;
-
     setSelectedNode(target);
 
-    // Compute rotation angles that will place this node closest to camera (Z positive)
-    const targetRotY = -Math.atan2(target.x, target.z);
-    const hypotXZ = Math.hypot(target.x, target.z);
-    const targetRotX = Math.atan2(target.y, hypotXZ);
-
-    targetRotationRef.current = {
-      x: Math.max(-0.9, Math.min(0.9, targetRotX)),
-      y: targetRotY,
-    };
+    // Calculate current node angle on its ring
+    const currentAngle = target.baseAngle + ringAnglesRef.current[target.ring];
+    // Set target yaw so this node faces the camera front (angle = Math.PI / 2 facing viewer)
+    targetCameraYawRef.current = -(currentAngle - Math.PI / 2);
   }, [selectedTechId]);
 
-  // Main 3D animation loop
+  // Main 3D Animation & Rendering Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -327,7 +347,7 @@ export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
       const rect = containerRef.current.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       width = rect.width;
-      height = Math.min(480, Math.max(390, rect.width * 0.7));
+      height = Math.min(460, Math.max(380, rect.width * 0.65));
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -341,167 +361,286 @@ export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
     window.addEventListener("resize", handleResize);
 
     const render = () => {
-      tick += 0.03;
+      tick += 0.02;
       ctx.clearRect(0, 0, width, height);
 
       const centerX = width / 2;
-      const centerY = height / 2;
-      const fov = 420;
+      const centerY = height / 2 - 10;
+      const fov = 550;
 
-      // Smooth interpolation to target orientation if requested
-      if (targetRotationRef.current) {
-        const dx = targetRotationRef.current.x - rotationRef.current.x;
-        const dy = targetRotationRef.current.y - rotationRef.current.y;
-        rotationRef.current.x += dx * 0.08;
-        rotationRef.current.y += dy * 0.08;
+      // Concentric orbital radii scaled responsively to container
+      const r1 = Math.min(width * 0.2, 100);
+      const r2 = Math.min(width * 0.32, 160);
+      const r3 = Math.min(width * 0.44, 225);
+      const ringRadii: { [key: number]: number } = { 1: r1, 2: r2, 3: r3 };
 
-        if (Math.abs(dx) < 0.005 && Math.abs(dy) < 0.005) {
-          targetRotationRef.current = null;
-        }
-      } else if (autoRotate && !mousePosRef.current.isDown) {
-        // Auto-rotation with celestial wobble
-        rotationRef.current.y += velocityRef.current.y * speedMultiplier;
-        rotationRef.current.x += Math.sin(tick * 0.5) * 0.0006 * speedMultiplier;
+      // 1. Advance Orbital Positions (Keplerian differential speed)
+      const isSlow = hoveredNodeId !== null;
+      const speedFactor = (isSlow ? 0.2 : 1.0) * speedMultiplier;
+
+      if (autoRotate && !mouseStateRef.current.isDown) {
+        // Inner ring (Core Backend) orbits fastest
+        ringAnglesRef.current[1] += 0.0075 * speedFactor;
+        // Middle ring (DevOps & Cloud) orbits medium
+        ringAnglesRef.current[2] += 0.0050 * speedFactor;
+        // Outer ring (Frontend & AI) orbits calm
+        ringAnglesRef.current[3] += 0.0033 * speedFactor;
       }
 
-      const rotX = rotationRef.current.x;
-      const rotY = rotationRef.current.y;
+      // 2. Camera Orientation Handling
+      if (targetCameraYawRef.current !== null) {
+        // Smoothly ease camera to face selected technology
+        let diff = (targetCameraYawRef.current - cameraRef.current.yaw) % (Math.PI * 2);
+        if (diff > Math.PI) diff -= Math.PI * 2;
+        if (diff < -Math.PI) diff += Math.PI * 2;
 
-      const cosX = Math.cos(rotX);
-      const sinX = Math.sin(rotX);
-      const cosY = Math.cos(rotY);
-      const sinY = Math.sin(rotY);
+        cameraRef.current.yaw += diff * 0.08;
+        // Also ease pitch back to optimal view
+        cameraRef.current.pitch += (DEFAULT_PITCH - cameraRef.current.pitch) * 0.08;
 
-      // Project 3D nodes to 2D
-      const projected: TechNodeItem[] = nodes3DRef.current.map((node) => {
-        // Rotate around Y axis
-        const x1 = node.x * cosY + node.z * sinY;
-        const y1 = node.y;
-        const z1 = -node.x * sinY + node.z * cosY;
+        if (Math.abs(diff) < 0.005) {
+          targetCameraYawRef.current = null;
+        }
+      } else if (!mouseStateRef.current.isDown) {
+        // Inertia damping after dragging
+        cameraRef.current.yaw += mouseStateRef.current.velYaw;
+        cameraRef.current.pitch += mouseStateRef.current.velPitch;
+        mouseStateRef.current.velYaw *= 0.92;
+        mouseStateRef.current.velPitch *= 0.92;
 
-        // Rotate around X axis
+        // Clamp pitch so orbit doesn't invert
+        cameraRef.current.pitch = Math.max(0.12, Math.min(0.85, cameraRef.current.pitch));
+      }
+
+      const pitch = cameraRef.current.pitch;
+      const yaw = cameraRef.current.yaw;
+      const cosPitch = Math.cos(pitch);
+      const sinPitch = Math.sin(pitch);
+      const cosYaw = Math.cos(yaw);
+      const sinYaw = Math.sin(yaw);
+
+      // -------------------------------------------------------------
+      // 3. Draw Canvas Background: Starfield & Core Reactor Glow
+      // -------------------------------------------------------------
+      ctx.save();
+
+      // Ambient radial core glow
+      const corePulse = 20 + Math.sin(tick * 1.8) * 3;
+      const coreGrad = ctx.createRadialGradient(
+        centerX,
+        centerY,
+        5,
+        centerX,
+        centerY,
+        r3 + 25
+      );
+      coreGrad.addColorStop(
+        0,
+        isDark ? "rgba(168, 85, 247, 0.26)" : "rgba(147, 51, 234, 0.15)"
+      );
+      coreGrad.addColorStop(
+        0.35,
+        isDark ? "rgba(59, 130, 246, 0.14)" : "rgba(37, 99, 235, 0.08)"
+      );
+      coreGrad.addColorStop(
+        0.75,
+        isDark ? "rgba(16, 185, 129, 0.06)" : "rgba(5, 150, 105, 0.03)"
+      );
+      coreGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, r3 + 25, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pulsing sonar radar waves radiating from center
+      for (let wave = 0; wave < 2; wave++) {
+        const waveRadius = ((tick * 18 + wave * 45) % (r2 * 0.9)) + 15;
+        const waveAlpha = Math.max(0, 0.25 * (1 - waveRadius / (r2 * 0.9)));
+        ctx.strokeStyle = isDark
+          ? `rgba(168, 85, 247, ${waveAlpha})`
+          : `rgba(147, 51, 234, ${waveAlpha * 0.8})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, waveRadius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // -------------------------------------------------------------
+      // 4. Draw Concentric 3D Orbital Rings (Matching Math Perfectly)
+      // -------------------------------------------------------------
+      const rings = [
+        {
+          id: 1,
+          radius: r1,
+          color: isDark ? "rgba(255, 45, 32, 0.45)" : "rgba(255, 45, 32, 0.35)",
+          activeColor: "#FF2D20",
+          speed: 0.0075,
+        },
+        {
+          id: 2,
+          radius: r2,
+          color: isDark ? "rgba(36, 150, 237, 0.4)" : "rgba(36, 150, 237, 0.3)",
+          activeColor: "#2496ED",
+          speed: 0.0050,
+        },
+        {
+          id: 3,
+          radius: r3,
+          color: isDark ? "rgba(97, 218, 251, 0.35)" : "rgba(97, 218, 251, 0.25)",
+          activeColor: "#61DAFB",
+          speed: 0.0033,
+        },
+      ];
+
+      for (const ring of rings) {
+        ctx.save();
+        const isRingActive = selectedNode?.ring === ring.id;
+        ctx.strokeStyle = isRingActive ? ring.activeColor : ring.color;
+        ctx.lineWidth = isRingActive ? 1.8 : 1.2;
+        if (!isRingActive) {
+          ctx.setLineDash([4, 6]);
+        }
+
+        ctx.beginPath();
+        const segments = 64;
+        for (let i = 0; i <= segments; i++) {
+          const phi = (i / segments) * Math.PI * 2;
+          const x0 = ring.radius * Math.cos(phi);
+          const z0 = ring.radius * Math.sin(phi);
+          const y0 = 0;
+
+          // Camera yaw
+          const x1 = x0 * cosYaw + z0 * sinYaw;
+          const z1 = -x0 * sinYaw + z0 * cosYaw;
+          const y1 = y0;
+
+          // Camera pitch
+          const x2 = x1;
+          const y2 = y1 * cosPitch - z1 * sinPitch;
+          const z2 = y1 * sinPitch + z1 * cosPitch;
+
+          // 3D Perspective Projection
+          const scale = fov / (fov + z2);
+          const px = centerX + x2 * scale;
+          const py = centerY + y2 * scale;
+
+          if (i === 0) {
+            ctx.moveTo(px, py);
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.stroke();
+
+        // Traveling bright photon packet along the ring track
+        const photonAngle = (ringAnglesRef.current[ring.id as 1 | 2 | 3] * 1.5 + tick * 0.8) % (Math.PI * 2);
+        const xP0 = ring.radius * Math.cos(photonAngle);
+        const zP0 = ring.radius * Math.sin(photonAngle);
+        const yP0 = 0;
+
+        const xP1 = xP0 * cosYaw + zP0 * sinYaw;
+        const zP1 = -xP0 * sinYaw + zP0 * cosYaw;
+        const yP1 = yP0;
+
+        const xP2 = xP1;
+        const yP2 = yP1 * cosPitch - zP1 * sinPitch;
+        const zP2 = yP1 * sinPitch + zP1 * cosPitch;
+
+        const scaleP = fov / (fov + zP2);
+        const pxP = centerX + xP2 * scaleP;
+        const pyP = centerY + yP2 * scaleP;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = ring.activeColor;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(pxP, pyP, isRingActive ? 3.5 : 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      // Center Nucleus Star (Pritesh DevOps Engine Core)
+      ctx.save();
+      ctx.fillStyle = isDark ? "#a855f7" : "#7c3aed";
+      ctx.shadowColor = "#a855f7";
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // White inner core point
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.restore();
+
+      // -------------------------------------------------------------
+      // 5. Update DOM Nodes (Real Icons, Living Animation, 100% Visible)
+      // -------------------------------------------------------------
+      for (let i = 0; i < ORBIT_TECHNOLOGIES.length; i++) {
+        const node = ORBIT_TECHNOLOGIES[i];
+        const el = nodeRefs.current[node.id];
+        if (!el) continue;
+
+        const radius = ringRadii[node.ring] || r2;
+        // Current revolving angle on ring
+        const currentAngle = node.baseAngle + ringAnglesRef.current[node.ring];
+
+        // 3D coordinates on orbital plane with subtle living vertical bobbing
+        const x0 = radius * Math.cos(currentAngle);
+        const z0 = radius * Math.sin(currentAngle);
+        const y0 = Math.sin(tick * 2.2 + i * 0.7) * 3.5;
+
+        // Camera Yaw rotation
+        const x1 = x0 * cosYaw + z0 * sinYaw;
+        const z1 = -x0 * sinYaw + z0 * cosYaw;
+        const y1 = y0;
+
+        // Camera Pitch rotation
         const x2 = x1;
-        const y2 = y1 * cosX - z1 * sinX;
-        const z2 = y1 * sinX + z1 * cosX;
+        const y2 = y1 * cosPitch - z1 * sinPitch;
+        const z2 = y1 * sinPitch + z1 * cosPitch;
 
-        // Perspective projection
+        // Perspective Projection
         const scale = fov / (fov + z2);
         const px = centerX + x2 * scale;
         const py = centerY + y2 * scale;
 
-        // Depth alpha: nodes closer to camera are brighter and larger
-        const alpha = Math.max(0.3, Math.min(1, (scale - 0.6) * 1.6));
+        const isSelected = selectedNode?.id === node.id;
+        const isHovered = hoveredNodeId === node.id;
+        const isCategoryMatch =
+          activeCategory === "all" || node.category === activeCategory;
 
-        return {
-          ...node,
-          px,
-          py,
-          scale,
-          z2,
-          alpha,
-        };
-      });
+        // Keep icons ALWAYS CLEARLY VISIBLE (minimum 0.85 opacity, never washed out)
+        const depthAlpha = Math.max(0.85, Math.min(1.0, (scale - 0.7) / 0.45));
+        const effectiveAlpha = isCategoryMatch ? depthAlpha : 0.22;
 
-      // 1. Background Holographic Core & Orbital Rings
-      ctx.save();
+        // Visual scale bounded so distant icons remain legible and prominent
+        const clampedScale = Math.max(0.88, Math.min(1.22, scale));
+        const effectiveScale = isSelected
+          ? clampedScale * 1.25
+          : isHovered
+          ? clampedScale * 1.18
+          : clampedScale;
 
-      // Ambient radial core
-      const coreGrad = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        15,
-        centerX,
-        centerY,
-        120
-      );
-      coreGrad.addColorStop(
-        0,
-        isDark ? "rgba(168, 85, 247, 0.28)" : "rgba(147, 51, 234, 0.16)"
-      );
-      coreGrad.addColorStop(
-        0.5,
-        isDark ? "rgba(59, 130, 246, 0.16)" : "rgba(37, 99, 235, 0.08)"
-      );
-      coreGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = coreGrad;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 120, 0, Math.PI * 2);
-      ctx.fill();
+        // Strict 3D Z-index ordering (front nodes naturally render over back nodes)
+        const zIndex = isSelected
+          ? 9999
+          : isHovered
+          ? 9990
+          : Math.round(z2 + 1000);
 
-      // 2. 3D Celestial Gyroscope Rings
-      ctx.lineWidth = 1;
-
-      // Outer Ring
-      ctx.strokeStyle = isDark ? "rgba(168, 85, 247, 0.25)" : "rgba(147, 51, 234, 0.2)";
-      ctx.setLineDash([5, 8]);
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY, 160, 68, rotX * 0.8, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Middle Ring tilted opposite
-      ctx.strokeStyle = isDark ? "rgba(59, 130, 246, 0.22)" : "rgba(37, 99, 235, 0.18)";
-      ctx.setLineDash([4, 6]);
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY, 135, 82, -rotY * 0.65, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Inner Equator Ring
-      ctx.strokeStyle = isDark ? "rgba(16, 185, 129, 0.2)" : "rgba(5, 150, 105, 0.16)";
-      ctx.setLineDash([2, 5]);
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY, 110, 50, rotX * 0.4 + rotY * 0.4, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.restore();
-
-      // 3. Draw Laser Connections and Traveling Photons between nodes
-      ctx.save();
-      for (let i = 0; i < projected.length; i++) {
-        for (let j = i + 1; j < projected.length; j++) {
-          const a = projected[i];
-          const b = projected[j];
-          const dist2D = Math.hypot((a.px || 0) - (b.px || 0), (a.py || 0) - (b.py || 0));
-
-          if (dist2D < 125) {
-            const isHighlighted = selectedNode?.id === a.id || selectedNode?.id === b.id;
-            const linkAlpha = (1 - dist2D / 125) * 0.3 * ((a.alpha || 1) + (b.alpha || 1)) * 0.5;
-
-            ctx.strokeStyle = isHighlighted
-              ? isDark
-                ? `rgba(192, 132, 252, ${Math.min(0.9, linkAlpha * 3.8)})`
-                : `rgba(126, 34, 206, ${Math.min(0.9, linkAlpha * 3.8)})`
-              : isDark
-              ? `rgba(148, 163, 184, ${linkAlpha})`
-              : `rgba(100, 116, 139, ${linkAlpha})`;
-
-            ctx.lineWidth = isHighlighted ? 2 : 0.8;
-            ctx.setLineDash([]);
-            ctx.beginPath();
-            ctx.moveTo(a.px || 0, a.py || 0);
-            ctx.lineTo(b.px || 0, b.py || 0);
-            ctx.stroke();
-
-            // Draw traveling energy photon along highlighted links
-            if (isHighlighted) {
-              const photonPos = (tick * 1.5 + (i + j) * 0.2) % 1;
-              const px = (a.px || 0) + ((b.px || 0) - (a.px || 0)) * photonPos;
-              const py = (a.py || 0) + ((b.py || 0) - (a.py || 0)) * photonPos;
-
-              ctx.fillStyle = "#ffffff";
-              ctx.shadowColor = a.brandColor;
-              ctx.shadowBlur = 8;
-              ctx.beginPath();
-              ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.shadowBlur = 0; // Reset
-            }
-          }
-        }
+        // Hardware-accelerated GPU transform
+        el.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%) scale(${effectiveScale})`;
+        el.style.zIndex = `${zIndex}`;
+        el.style.opacity = `${effectiveAlpha}`;
+        el.style.pointerEvents = isCategoryMatch ? "auto" : "none";
       }
-      ctx.restore();
-
-      // Update state for DOM overlay nodes
-      setProjectedNodes(projected);
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -512,144 +651,159 @@ export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", handleResize);
     };
-  }, [autoRotate, speedMultiplier, isDark, selectedNode]);
+  }, [autoRotate, speedMultiplier, isDark, selectedNode, hoveredNodeId, activeCategory]);
 
-  // Touch and pointer handlers for 3D navigation
-  const handlePointerDown = (clientX: number, clientY: number) => {
-    mousePosRef.current = { x: clientX, y: clientY, isDown: true, hasMoved: false };
-    targetRotationRef.current = null; // Cancel any auto target rotation on manual interaction
+  // Mouse & Touch Drag Controls for 3D Camera Rotation
+  const handlePointerDown = (e: React.PointerEvent) => {
+    mouseStateRef.current.isDown = true;
+    mouseStateRef.current.startX = e.clientX;
+    mouseStateRef.current.startY = e.clientY;
+    mouseStateRef.current.lastX = e.clientX;
+    mouseStateRef.current.lastY = e.clientY;
+    mouseStateRef.current.velYaw = 0;
+    mouseStateRef.current.velPitch = 0;
+    mouseStateRef.current.hasDragged = false;
+    targetCameraYawRef.current = null;
   };
 
-  const handlePointerMove = (clientX: number, clientY: number) => {
-    if (!mousePosRef.current.isDown) return;
-    const deltaX = clientX - mousePosRef.current.x;
-    const deltaY = clientY - mousePosRef.current.y;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!mouseStateRef.current.isDown) return;
+    const dx = e.clientX - mouseStateRef.current.lastX;
+    const dy = e.clientY - mouseStateRef.current.lastY;
 
-    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-      mousePosRef.current.hasMoved = true;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      mouseStateRef.current.hasDragged = true;
     }
 
-    rotationRef.current.y += deltaX * 0.0055;
-    rotationRef.current.x -= deltaY * 0.0055;
+    // Drag horizontally rotates yaw, vertically tilts pitch
+    const deltaYaw = dx * 0.007;
+    const deltaPitch = -dy * 0.005;
 
-    // Constrain pitch so it doesn't flip upside down
-    rotationRef.current.x = Math.max(-0.95, Math.min(0.95, rotationRef.current.x));
+    cameraRef.current.yaw += deltaYaw;
+    cameraRef.current.pitch = Math.max(
+      0.12,
+      Math.min(0.85, cameraRef.current.pitch + deltaPitch)
+    );
 
-    mousePosRef.current.x = clientX;
-    mousePosRef.current.y = clientY;
+    mouseStateRef.current.velYaw = deltaYaw * 0.6;
+    mouseStateRef.current.velPitch = deltaPitch * 0.6;
+    mouseStateRef.current.lastX = e.clientX;
+    mouseStateRef.current.lastY = e.clientY;
   };
 
   const handlePointerUp = () => {
-    mousePosRef.current.isDown = false;
+    mouseStateRef.current.isDown = false;
   };
 
   const handleNodeClick = (node: TechNodeItem) => {
-    if (mousePosRef.current.hasMoved) return; // Ignore clicks if user was dragging
+    // If user was dragging camera, don't trigger click
+    if (mouseStateRef.current.hasDragged) return;
+
     setSelectedNode(node);
-    onSelectTech?.(node.id);
+    onSelectTech?.(node);
 
-    // Smoothly turn node to camera
-    const targetRotY = -Math.atan2(node.x, node.z);
-    const hypotXZ = Math.hypot(node.x, node.z);
-    const targetRotX = Math.atan2(node.y, hypotXZ);
-
-    targetRotationRef.current = {
-      x: Math.max(-0.85, Math.min(0.85, targetRotX)),
-      y: targetRotY,
-    };
+    // Calculate current angle and align camera smoothly to face it
+    const currentAngle = node.baseAngle + ringAnglesRef.current[node.ring];
+    targetCameraYawRef.current = -(currentAngle - Math.PI / 2);
   };
 
-  const resetOrientation = () => {
-    targetRotationRef.current = { x: 0.22, y: 0.38 };
+  const resetCamera = () => {
+    cameraRef.current.pitch = DEFAULT_PITCH;
+    cameraRef.current.yaw = 0;
+    mouseStateRef.current.velYaw = 0;
+    mouseStateRef.current.velPitch = 0;
+    targetCameraYawRef.current = null;
   };
 
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-3xl border shadow-2xl overflow-hidden p-4 sm:p-5 transition-all duration-300 ${
+      className={`rounded-3xl border shadow-2xl overflow-hidden transition-all duration-300 relative select-none ${
         isDark
-          ? "bg-slate-900/90 border-slate-800 text-slate-100"
-          : "bg-white/95 border-slate-200 text-slate-900 shadow-xl"
+          ? "bg-slate-950/95 border-slate-800 shadow-purple-950/20"
+          : "bg-slate-900 text-slate-100 border-slate-700 shadow-slate-400/30"
       }`}
     >
-      {/* Top Header Bar with Live Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-2xl bg-gradient-to-tr from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/25">
-            <Rotate3d size={18} className={autoRotate ? "animate-spin-slow" : ""} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm sm:text-base tracking-tight">
-                3D Tech Orbit
-              </h3>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Live Constellation
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400">
-              Interactive 3D model featuring Laravel, PHP, Docker, Linux, MySQL, React & more
-            </p>
-          </div>
+      {/* Top Header & Interactive Orbit Controls */}
+      <div className="px-4 py-3 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+          <span className="text-xs font-mono font-bold text-slate-200 flex items-center gap-1.5">
+            <Rotate3d size={14} className="text-purple-400" />
+            3D Tech Planetary System
+          </span>
+          <span className="text-[10px] font-mono text-purple-300/80 hidden sm:inline bg-purple-500/10 px-2 py-0.5 rounded-md border border-purple-500/20">
+            3 Concentric Kepler Rings
+          </span>
         </div>
 
-        {/* Orbit Motion Controls */}
-        <div className="flex items-center gap-1.5">
+        {/* Orbit Interaction Controls */}
+        <div className="flex items-center gap-1.5 text-xs font-mono">
+          {/* Auto-Rotate Play/Pause */}
           <button
             type="button"
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all cursor-pointer ${
+            title={autoRotate ? "Pause Orbital Motion" : "Resume Orbital Motion"}
+            className={`p-1.5 rounded-lg border flex items-center gap-1 transition-all cursor-pointer ${
               autoRotate
-                ? "bg-purple-600/15 border-purple-500/30 text-purple-300 shadow-sm"
-                : "bg-slate-800/40 border-slate-700 text-slate-400"
+                ? "bg-purple-600 text-white border-purple-500 shadow-sm shadow-purple-500/30"
+                : "bg-slate-800 text-slate-300 border-slate-700 hover:text-white"
             }`}
-            title="Toggle 3D Orbit Auto-Spin"
           >
             {autoRotate ? <Pause size={12} /> : <Play size={12} />}
-            <span>{autoRotate ? "Spinning" : "Paused"}</span>
+            <span className="text-[10px] font-bold hidden sm:inline">
+              {autoRotate ? "Orbiting" : "Paused"}
+            </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setSpeedMultiplier((prev) => (prev === 1 ? 2 : prev === 2 ? 0.5 : 1))}
-            className="px-2 py-1.5 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800/50 text-slate-300 hover:text-white transition-all cursor-pointer"
-            title="Change rotation speed"
-          >
-            <Zap size={12} className="inline mr-1 text-amber-400" />
-            <span>{speedMultiplier}x</span>
-          </button>
+          {/* Speed Multiplier */}
+          <div className="flex items-center rounded-lg bg-slate-800 border border-slate-700 p-0.5">
+            {[0.5, 1, 2].map((sp) => (
+              <button
+                key={sp}
+                type="button"
+                onClick={() => setSpeedMultiplier(sp)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                  speedMultiplier === sp
+                    ? "bg-purple-600 text-white"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {sp}x
+              </button>
+            ))}
+          </div>
 
+          {/* Reset Camera Button */}
           <button
             type="button"
-            onClick={resetOrientation}
-            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800/50 text-slate-300 hover:text-white transition-all cursor-pointer"
-            title="Reset 3D Perspective"
+            onClick={resetCamera}
+            title="Reset 3D Camera"
+            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all cursor-pointer"
           >
-            <Compass size={15} />
+            <Compass size={12} />
           </button>
         </div>
       </div>
 
       {/* Category Filter Pills */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+      <div className="px-4 py-2 bg-slate-900/60 border-b border-slate-800/60 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px] font-medium">
         {[
-          { id: "all", label: "All Tech" },
-          { id: "backend", label: "Backend & PHP" },
-          { id: "devops", label: "DevOps & Linux" },
+          { id: "all", label: "All Techs (16)" },
+          { id: "backend", label: "Backend" },
+          { id: "devops", label: "DevOps & Cloud" },
           { id: "database", label: "Databases" },
           { id: "frontend", label: "Frontend" },
           { id: "mobile", label: "Mobile" },
         ].map((cat) => (
           <button
-            type="button"
             key={cat.id}
+            type="button"
             onClick={() => setActiveCategory(cat.id)}
-            className={`px-2.5 py-1 rounded-xl text-[11px] font-medium transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeCategory === cat.id
-                ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 scale-105"
-                : isDark
-                ? "bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 font-bold"
+                : "bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700/60"
             }`}
           >
             {cat.label}
@@ -657,207 +811,203 @@ export const InteractiveTechOrbit: React.FC<InteractiveTechOrbitProps> = ({
         ))}
       </div>
 
-      {/* 3D Orbit Viewport with Interactive Tech Nodes */}
+      {/* 3D Canvas + Overlay Technology Nodes Container */}
       <div
-        className="relative w-full h-[360px] sm:h-[400px] rounded-2xl overflow-hidden bg-slate-950/70 border border-slate-800/90 select-none cursor-grab active:cursor-grabbing"
-        onMouseDown={(e) => handlePointerDown(e.clientX, e.clientY)}
-        onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
-        onMouseUp={handlePointerUp}
-        onMouseLeave={handlePointerUp}
-        onTouchStart={(e) => {
-          if (e.touches.length === 1) {
-            handlePointerDown(e.touches[0].clientX, e.touches[0].clientY);
-          }
-        }}
-        onTouchMove={(e) => {
-          if (e.touches.length === 1) {
-            handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
-          }
-        }}
-        onTouchEnd={handlePointerUp}
+        className="relative w-full h-[390px] sm:h-[420px] overflow-hidden cursor-grab active:cursor-grabbing touch-none"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
       >
-        {/* Background Laser Canvas (Core, Gyro Rings & Connection lines) */}
+        {/* Background 3D Elliptical Orbits Canvas */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-        {/* 3D Projected Moving Tech Icons Layer */}
-        <div className="absolute inset-0 pointer-events-none">
-          {projectedNodes.map((node) => {
-            if (node.px === undefined || node.py === undefined) return null;
-
-            const isSelected = selectedNode?.id === node.id;
-            const isCategoryMatch = activeCategory === "all" || node.category === activeCategory;
-            const scale = node.scale || 1;
-            const zIndex = Math.round((node.z2 || 0) + 700);
-            const isFront = (node.z2 || 0) >= -25;
-            const alpha = (node.alpha || 1) * (isCategoryMatch ? 1 : 0.2);
-
-            // Icon size scales proportionally with 3D depth
-            const iconSize = Math.max(16, Math.min(28, Math.round(22 * scale)));
-
-            return (
-              <div
-                key={node.id}
-                style={{
-                  position: "absolute",
-                  left: `${node.px}px`,
-                  top: `${node.py}px`,
-                  transform: `translate(-50%, -50%) scale(${isSelected ? scale * 1.12 : scale})`,
-                  zIndex: isSelected ? 9999 : zIndex,
-                  opacity: alpha,
-                  transition: "transform 0.08s ease-out, opacity 0.2s ease",
-                }}
-                className="pointer-events-auto"
-              >
-                <div
-                  onClick={() => handleNodeClick(node)}
-                  className={`group relative flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-                    isSelected ? "scale-110" : "hover:scale-115"
-                  }`}
-                  title={`${node.name} (${node.proficiency}% proficiency)`}
-                >
-                  {/* Glowing Outer Halo */}
-                  <div
-                    style={{
-                      backgroundColor: node.brandColor,
-                    }}
-                    className={`absolute inset-0 rounded-2xl blur-md transition-opacity duration-300 ${
-                      isSelected
-                        ? "opacity-75 scale-130"
-                        : "opacity-20 group-hover:opacity-60"
-                    }`}
-                  />
-
-                  {/* Node Badge with Authentic Technology SVG Icon */}
-                  <div
-                    style={{
-                      borderColor: isSelected
-                        ? "#ffffff"
-                        : isDark
-                        ? `${node.brandColor}95`
-                        : `${node.brandColor}bb`,
-                    }}
-                    className={`relative p-2 sm:p-2.5 rounded-2xl border-2 flex items-center justify-center transition-all duration-200 backdrop-blur-md shadow-xl ${
-                      isSelected
-                        ? "bg-slate-900 ring-4 ring-purple-500/50 shadow-purple-500/40"
-                        : isDark
-                        ? "bg-slate-900/90 hover:border-white shadow-black/70"
-                        : "bg-white/95 hover:border-slate-800 shadow-slate-900/20"
-                    }`}
-                  >
-                    <TechIcon name={node.iconName} size={iconSize} className="drop-shadow-sm" />
-                  </div>
-
-                  {/* Technology Label Badge underneath icon (only prominent when in front or selected to prevent clutter) */}
-                  {(isFront || isSelected) && (
-                    <div
-                      className={`mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-tight whitespace-nowrap transition-all duration-200 border shadow-md ${
-                        isSelected
-                          ? "bg-purple-600 text-white border-purple-400 scale-105"
-                          : isDark
-                          ? "bg-slate-900/90 text-slate-200 border-slate-700/80 group-hover:text-white group-hover:border-purple-400"
-                          : "bg-white text-slate-800 border-slate-300 group-hover:text-purple-600 group-hover:border-purple-300"
-                      }`}
-                    >
-                      {node.shortLabel}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        {/* Central Hub Core Overlay Tag */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -mt-2.5 pointer-events-none z-10 flex flex-col items-center">
+          <div className="px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-500/40 text-[9px] font-mono text-purple-300 backdrop-blur-sm shadow-lg shadow-purple-900/40">
+            DevOps Core
+          </div>
         </div>
 
+        {/* DOM Technology Nodes with Real Animated Brand Icons */}
+        {ORBIT_TECHNOLOGIES.map((node) => {
+          const isSelected = selectedNode?.id === node.id;
+          const isHovered = hoveredNodeId === node.id;
+
+          return (
+            <div
+              key={node.id}
+              ref={(el) => {
+                nodeRefs.current[node.id] = el;
+              }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                willChange: "transform, opacity, z-index",
+              }}
+              onPointerEnter={() => setHoveredNodeId(node.id)}
+              onPointerLeave={() => setHoveredNodeId(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNodeClick(node);
+              }}
+              className="cursor-pointer group flex flex-col items-center select-none"
+            >
+              {/* Brand Icon Pod */}
+              <div
+                style={{
+                  borderColor: node.brandColor,
+                  boxShadow: isSelected
+                    ? `0 0 24px ${node.brandColor}99, 0 8px 20px rgba(0,0,0,0.7)`
+                    : isHovered
+                    ? `0 0 16px ${node.brandColor}66, 0 6px 16px rgba(0,0,0,0.6)`
+                    : `0 4px 12px rgba(0,0,0,0.5)`,
+                }}
+                className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl border-2 flex items-center justify-center transition-shadow duration-300 relative ${
+                  isDark
+                    ? "bg-slate-900/95 text-white"
+                    : "bg-slate-900 text-white"
+                } ${isSelected ? "ring-2 ring-white/80" : ""}`}
+              >
+                {/* Brand color ambient halo glow */}
+                <div
+                  style={{ backgroundColor: node.brandColor }}
+                  className={`absolute inset-0 rounded-2xl transition-opacity duration-300 blur-sm pointer-events-none ${
+                    isSelected ? "opacity-35" : isHovered ? "opacity-25" : "opacity-10"
+                  }`}
+                />
+
+                {/* Real Authentic SVG Brand Icon */}
+                <div className="relative z-10 transition-transform duration-300 group-hover:scale-110">
+                  <TechIcon name={node.iconName} size={26} />
+                </div>
+
+                {/* Live Selected Ping Beacon */}
+                {isSelected && (
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span
+                      style={{ backgroundColor: node.brandColor }}
+                      className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                    />
+                    <span
+                      style={{ backgroundColor: node.brandColor }}
+                      className="relative inline-flex rounded-full h-3 w-3 border border-white"
+                    />
+                  </span>
+                )}
+              </div>
+
+              {/* Readable Label Pill Beneath the Icon */}
+              <div
+                style={{
+                  borderColor: isSelected ? node.brandColor : "rgba(100, 116, 139, 0.4)",
+                  backgroundColor: isSelected
+                    ? `${node.brandColor}22`
+                    : "rgba(15, 23, 42, 0.9)",
+                }}
+                className={`mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-tight text-white border backdrop-blur-md shadow-md transition-all duration-200 whitespace-nowrap ${
+                  isSelected
+                    ? "ring-1 ring-white/50 text-white scale-105"
+                    : "text-slate-200 group-hover:text-white"
+                }`}
+              >
+                {node.shortLabel}
+              </div>
+            </div>
+          );
+        })}
+
         {/* Floating Hint Overlay */}
-        <div className="absolute bottom-2.5 left-2.5 text-[10px] sm:text-[11px] text-slate-400 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/60 flex items-center gap-1.5 pointer-events-none shadow-lg">
-          <Sparkles size={12} className="text-amber-400 animate-spin-slow" />
-          <span>Click & drag to rotate 3D • Tap any icon to inspect</span>
+        <div className="absolute bottom-2 left-3 pointer-events-none text-[10px] font-mono text-slate-400/80 bg-slate-950/70 px-2.5 py-1 rounded-full border border-slate-800/80 backdrop-blur-sm">
+          Drag to rotate 3D orbit • Click any node to inspect
         </div>
       </div>
 
-      {/* Selected Technology Inspection Panel */}
+      {/* Selected Technology Inspection Card */}
       <AnimatePresence mode="wait">
         {selectedNode && (
           <motion.div
             key={selectedNode.id}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2 }}
-            className={`mt-3 p-3.5 sm:p-4 rounded-2xl border transition-all ${
-              isDark
-                ? "bg-slate-800/70 border-slate-700/80 text-slate-200"
-                : "bg-slate-50 border-slate-200 text-slate-800 shadow-sm"
-            }`}
+            exit={{ opacity: 0, y: 15 }}
+            transition={{ duration: 0.22 }}
+            className="p-4 bg-slate-900/95 border-t border-slate-800 flex flex-col gap-2.5"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-2.5">
-              <div className="flex items-center gap-2.5">
+            {/* Top Row: Icon + Name + Ring Badge + Proficiency */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-3">
                 <div
                   style={{ borderColor: selectedNode.brandColor }}
-                  className="p-2 rounded-xl border-2 bg-slate-900 shadow-md flex items-center justify-center flex-shrink-0"
+                  className="w-10 h-10 rounded-xl border-2 bg-slate-950 flex items-center justify-center shadow-lg"
                 >
                   <TechIcon name={selectedNode.iconName} size={22} />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold flex items-center gap-1.5">
-                    <span>{selectedNode.name}</span>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-white leading-tight">
+                      {selectedNode.name}
+                    </h4>
                     <span
                       style={{
-                        backgroundColor: `${selectedNode.brandColor}20`,
+                        borderColor: selectedNode.brandColor,
                         color: selectedNode.brandColor,
-                        borderColor: `${selectedNode.brandColor}40`,
                       }}
-                      className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border"
+                      className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-slate-950/80"
                     >
-                      {selectedNode.category}
+                      Ring {selectedNode.ring}:{" "}
+                      {selectedNode.ring === 1
+                        ? "Core Backend"
+                        : selectedNode.ring === 2
+                        ? "DevOps & Cloud"
+                        : "Frontend & AI"}
                     </span>
-                  </h4>
-                  <p className="text-[11px] text-purple-400 font-semibold flex items-center gap-1">
-                    <CheckCircle size={11} className="text-emerald-400" />
-                    <span>{selectedNode.experience}</span>
-                  </p>
+                  </div>
+                  <div className="text-xs text-purple-300 font-mono mt-0.5">
+                    {selectedNode.experience}
+                  </div>
                 </div>
               </div>
 
-              {/* Proficiency Gauge */}
-              <div className="flex items-center gap-2 self-start sm:self-center">
-                <div className="text-right">
-                  <div className="text-[10px] text-slate-400 font-medium">Proficiency</div>
-                  <div className="text-base font-black text-slate-100 dark:text-white leading-none">
-                    {selectedNode.proficiency}%
-                  </div>
-                </div>
-                <div className="w-20 sm:w-24 bg-slate-700/50 rounded-full h-2 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${selectedNode.proficiency}%` }}
-                    transition={{ duration: 0.5 }}
-                    style={{ backgroundColor: selectedNode.brandColor }}
+              {/* Proficiency Bar */}
+              <div className="flex items-center gap-2 bg-slate-950/90 px-3 py-1.5 rounded-xl border border-slate-800">
+                <span className="text-[11px] font-mono text-slate-400">Mastery:</span>
+                <span
+                  style={{ color: selectedNode.brandColor }}
+                  className="text-xs font-mono font-bold"
+                >
+                  {selectedNode.proficiency}%
+                </span>
+                <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    style={{
+                      width: `${selectedNode.proficiency}%`,
+                      backgroundColor: selectedNode.brandColor,
+                    }}
                     className="h-full rounded-full"
                   />
                 </div>
               </div>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 mb-2.5">
+            {/* Description */}
+            <p className="text-xs text-slate-300 leading-relaxed">
               {selectedNode.description}
             </p>
 
-            {/* Key Ecosystem Tools */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-700/50">
-              <span className="text-[10px] font-semibold text-slate-400 mr-1 flex items-center gap-1">
-                <Info size={11} />
-                Key Stack:
+            {/* Key Tools Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                <Code2 size={11} className="text-purple-400" />
+                Tools & Stack:
               </span>
-              {selectedNode.tools.map((tool) => (
+              {selectedNode.tools.map((t) => (
                 <span
-                  key={tool}
-                  className={`text-[10px] px-2 py-0.5 rounded-lg border font-medium ${
-                    isDark
-                      ? "bg-slate-900/80 border-slate-700 text-slate-300"
-                      : "bg-white border-slate-200 text-slate-700"
-                  }`}
+                  key={t}
+                  className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-slate-800/90 text-slate-200 border border-slate-700/80"
                 >
-                  {tool}
+                  {t}
                 </span>
               ))}
             </div>
