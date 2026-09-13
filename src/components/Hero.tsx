@@ -15,6 +15,8 @@ import {
   Rotate3d,
   Sparkles,
   Play,
+  BookOpen,
+  Activity,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,7 @@ const Hero = () => {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [activeTerminalTab, setActiveTerminalTab] = useState<"status" | "skills" | "contact" | "deploy">("status");
   const [rightViewMode, setRightViewMode] = useState<"terminal" | "3d-orbit">("terminal");
+  const [orbitSelectedTechId, setOrbitSelectedTechId] = useState<string | null>("laravel");
 
   useEffect(() => {
     const currentTitle = TITLES[currentIndex];
@@ -98,7 +101,40 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
             className="lg:col-span-6 text-center lg:text-left space-y-6"
           >
-            {/* Status Pills */}
+            {/* Live System & Infrastructure Telemetry Banner (Eliminates blank space & adds live DevOps feel) */}
+            <div className="flex items-center justify-center lg:justify-start">
+              <div
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono border backdrop-blur-md shadow-sm transition-all ${
+                  isDark
+                    ? "bg-slate-900/80 border-slate-700/70 text-slate-300"
+                    : "bg-white/90 border-slate-200 text-slate-700"
+                }`}
+              >
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider">SYS: ONLINE</span>
+                <span className="text-slate-500">•</span>
+                <span className="text-slate-400 font-medium hidden sm:inline">pleximus-node-01</span>
+                <span className="text-slate-500 hidden sm:inline">•</span>
+                <span className="text-purple-500 dark:text-purple-400 font-semibold">99.98% Uptime</span>
+                <span className="text-slate-500 hidden md:inline">•</span>
+                <span className="text-blue-500 dark:text-blue-400 hidden md:inline">IST (UTC+5:30)</span>
+              </div>
+            </div>
+
+            {/* Interactive Shell Prompt Line */}
+            <div className="flex items-center gap-2 justify-center lg:justify-start font-mono text-xs text-slate-400 bg-slate-900/50 dark:bg-slate-950/70 px-3.5 py-1.5 rounded-xl border border-slate-800/80 w-fit mx-auto lg:mx-0 shadow-sm">
+              <Terminal size={13} className="text-emerald-400" />
+              <span className="text-emerald-400 font-bold">pritesh@pleximus</span>
+              <span className="text-slate-500">:</span>
+              <span className="text-blue-400">~/portfolio</span>
+              <span className="text-slate-500">$</span>
+              <span className="text-slate-200 font-semibold">./init.sh --stack="fullstack-devops"</span>
+            </div>
+
+            {/* Status & Achievement Badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -110,7 +146,13 @@ const Hero = () => {
                 3rd Rank MCA (8.86 CGPA)
               </span>
 
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-sm">
+                <BookOpen size={13} />
+                IJSRST Published Researcher
+              </span>
+
               <button
+                type="button"
                 onClick={handleCelebrate}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 transition-all cursor-pointer shadow-sm hover:scale-105"
                 title="Click to celebrate!"
@@ -120,11 +162,15 @@ const Hero = () => {
               </button>
             </div>
 
-            {/* Main Name & Title */}
+            {/* Main Name & Title with Animated Greeting */}
             <div>
-              <p className="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-widest mb-2">
-                Hello, World! I am
-              </p>
+              <div className="flex items-center gap-2.5 justify-center lg:justify-start mb-2">
+                <span className="text-2xl sm:text-3xl animate-wave origin-bottom-right select-none">👋</span>
+                <p className="text-xs sm:text-sm font-bold tracking-widest uppercase bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  Hello, World! I am
+                </p>
+                <span className="hidden sm:inline-block h-px w-14 bg-gradient-to-r from-purple-500/50 via-blue-500/30 to-transparent" />
+              </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight">
                 <span className={isDark ? "text-white" : "text-slate-900"}>Pritesh </span>
                 <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
@@ -248,16 +294,23 @@ const Hero = () => {
             className="lg:col-span-6 relative"
           >
             {/* Floating Tech Badges around the right container */}
-            <AnimatedTechBadges />
+            <AnimatedTechBadges
+              activeViewMode={rightViewMode}
+              onSelectBadge={(techId) => {
+                setRightViewMode("3d-orbit");
+                setOrbitSelectedTechId(techId);
+              }}
+            />
 
             {/* Switcher Bar on Top of the interactive window */}
             <div className="flex items-center justify-between mb-3 px-1">
-              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-800/40 border border-slate-700/50">
+              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-800/60 border border-slate-700/60 backdrop-blur-md shadow-md">
                 <button
+                  type="button"
                   onClick={() => setRightViewMode("terminal")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     rightViewMode === "terminal"
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/30 font-bold scale-[1.02]"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
@@ -265,10 +318,11 @@ const Hero = () => {
                   <span>DevOps Terminal</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setRightViewMode("3d-orbit")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     rightViewMode === "3d-orbit"
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/30 font-bold scale-[1.02]"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
@@ -277,9 +331,12 @@ const Hero = () => {
                 </button>
               </div>
 
-              <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
-                Live Interactive Mode
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-purple-400 font-mono hidden sm:flex items-center gap-1.5 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {rightViewMode === "terminal" ? "Interactive Shell" : "3D Constellation"}
+                </span>
+              </div>
             </div>
 
             {/* View Mode Switching */}
@@ -446,7 +503,10 @@ const Hero = () => {
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <InteractiveTechOrbit />
+                  <InteractiveTechOrbit
+                    selectedTechId={orbitSelectedTechId}
+                    onSelectTech={(id) => setOrbitSelectedTechId(id)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
