@@ -1,378 +1,540 @@
-
-import { Calendar, GraduationCap, Award, BookOpen, Trophy, Star, ChevronDown, Check } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTheme } from "@/contexts/ThemeContext";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import {
+  GraduationCap,
+  Award,
+  Calendar,
+  MapPin,
+  CheckCircle2,
+  BookOpen,
+  School,
+  Trophy,
+  Sparkles,
+  LayoutGrid,
+  GitCommit,
+  TrendingUp,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useTheme } from "@/contexts/ThemeContext";
+import TiltCard from "./TiltCard";
+
+interface EducationItem {
+  id: string;
+  degree: string;
+  field: string;
+  institution: string;
+  boardOrUniversity: string;
+  location: string;
+  period: string;
+  score: string;
+  scoreType: "CGPA" | "Percentage";
+  distinction: string;
+  category: "higher" | "schooling";
+  icon: typeof GraduationCap;
+  accentColor: string;
+  description: string[];
+  keyHighlights: string[];
+}
+
+interface Certification {
+  title: string;
+  issuer: string;
+  date: string;
+  credentialId?: string;
+  tags: string[];
+}
+
+const educationData: EducationItem[] = [
+  {
+    id: "mca",
+    degree: "Master of Computer Applications (MCA)",
+    field: "Computer Science & Application Development",
+    institution: "Finolex Academy of Management & Technology (FAMT)",
+    boardOrUniversity: "University of Mumbai",
+    location: "Ratnagiri, Maharashtra",
+    period: "July 2024 – June 2026",
+    score: "8.86 CGPA",
+    scoreType: "CGPA",
+    distinction: "3rd Rank in MCA Cohort",
+    category: "higher",
+    icon: GraduationCap,
+    accentColor: "from-purple-500 to-indigo-500",
+    description: [
+      "Graduated with top academic honors, achieving 3rd Rank overall in the MCA batch with an 8.86 CGPA.",
+      "Published peer-reviewed research on SkinFusion-Net hybrid deep learning in IJSRST journal (2026).",
+      "Specialized in advanced backend engineering, cloud database architecture, Linux sysadmin, and DevOps.",
+    ],
+    keyHighlights: ["3rd University Rank", "Published Research (IJSRST)", "DevOps Specialization"],
+  },
+  {
+    id: "bsc",
+    degree: "Bachelor of Science (BSc)",
+    field: "Computer Science",
+    institution: "Nya. Tatyasaheb Athalye Arts, Ved. S.R. Sapre Commerce & Vid. Dadasaheb Pitre Science College",
+    boardOrUniversity: "University of Mumbai",
+    location: "Devrukh, Ratnagiri, Maharashtra",
+    period: "July 2021 – June 2024",
+    score: "9.92 CGPA",
+    scoreType: "CGPA",
+    distinction: "Department Topper (Rank 1)",
+    category: "higher",
+    icon: Trophy,
+    accentColor: "from-blue-500 to-cyan-500",
+    description: [
+      "Graduated at the very peak of the Computer Science department with an outstanding 9.92 CGPA across 6 semesters.",
+      "Selected to represent Mumbai University in Kho-Kho sports competitions at the Zonal Level.",
+      "Mastered foundational computer science, Data Structures & Algorithms, C++, PHP, and Relational Database Systems.",
+    ],
+    keyHighlights: ["Department Rank 1", "Mumbai Univ Athlete", "Algorithms & Systems"],
+  },
+  {
+    id: "hsc",
+    degree: "Higher Secondary Certificate (HSC - 12th)",
+    field: "Science & Computer Science",
+    institution: "G.K. Sapare Junior College",
+    boardOrUniversity: "Maharashtra State Board (MSBSHSE)",
+    location: "Devrukh, Ratnagiri, Maharashtra",
+    period: "2019 – 2021",
+    score: "89.66%",
+    scoreType: "Percentage",
+    distinction: "First Class with Distinction",
+    category: "schooling",
+    icon: School,
+    accentColor: "from-emerald-500 to-teal-500",
+    description: [
+      "Achieved an exceptional 89.66% in the Maharashtra State Board HSC examination.",
+      "Studied Science stream with core electives in Computer Science, Mathematics, and Physics.",
+      "Developed foundational coding logic, algorithmic reasoning, and mathematical computation.",
+    ],
+    keyHighlights: ["89.66% Distinction", "Science Stream", "Computer Science Elective"],
+  },
+  {
+    id: "ssc",
+    degree: "Secondary School Certificate (SSC - 10th)",
+    field: "General Science, Mathematics & Languages",
+    institution: "M.V. Sonavade High School",
+    boardOrUniversity: "Maharashtra State Board (MSBSHSE)",
+    location: "Ratnagiri, Maharashtra",
+    period: "2018 – 2019",
+    score: "86.00%",
+    scoreType: "Percentage",
+    distinction: "First Class with Distinction",
+    category: "schooling",
+    icon: Award,
+    accentColor: "from-amber-500 to-orange-500",
+    description: [
+      "Secured 86.00% with First Class Distinction in the Maharashtra State Board Class 10 examination.",
+      "Earned Grade 'A' in the Maharashtra State Elementary Level Government Drawing Examination.",
+      "Active school participant in athletics, state-level Kho-Kho competitions, and academic exhibitions.",
+    ],
+    keyHighlights: ["86.00% Distinction", "Drawing Exam Grade A", "Athletics & Academics"],
+  },
+];
+
+const certifications: Certification[] = [
+  { title: "React Essential Training", issuer: "LinkedIn Learning", date: "July 2025", tags: ["React.js", "Frontend", "Component Architecture"] },
+  { title: "React Hooks", issuer: "LinkedIn Learning", date: "July 2025", tags: ["Hooks", "State Management", "Performance"] },
+  { title: "React: Creating and Hosting a Full-Stack Site", issuer: "LinkedIn Learning", date: "July 2025", tags: ["Full-Stack", "Hosting", "APIs"] },
+  { title: "React.js: Building an Interface", issuer: "LinkedIn Learning", date: "July 2025", tags: ["UI/UX", "Component Design", "Tailwind"] },
+  { title: "React Native", issuer: "Onwingspan", date: "June 2025", tags: ["Mobile", "Cross-Platform", "React Native"] },
+  { title: "Git & GitHub Bootcamp", issuer: "LetsUpgrade", date: "June 2025", credentialId: "LUEGGJUN12564", tags: ["Git", "GitHub", "VCS", "DevOps"] },
+  { title: "Beginning Python", issuer: "Infosys Springboard", date: "June 2025", tags: ["Python", "Scripting", "OOP"] },
+  { title: "Creating GitHub Portfolios", issuer: "LinkedIn Learning", date: "June 2025", tags: ["GitHub", "Showcase", "Markdown"] },
+  { title: "UX and UI – Designing with Color Theory", issuer: "Onwingspan", date: "2025", tags: ["Design", "Color Theory", "Accessibility"] },
+  { title: "Getting Started with Artificial Intelligence", issuer: "IBM SkillsBuild / Credly", date: "2024", tags: ["AI", "Machine Learning", "IBM"] },
+  { title: "Introduction to Artificial Intelligence (MDL-211)", issuer: "IBM SkillsBuild", date: "2024", tags: ["AI", "Algorithms", "Neural Networks"] },
+];
 
 const Education = () => {
   const { isDark } = useTheme();
-  const { elementRef: titleRef, isVisible: titleVisible } = useScrollAnimation();
-  const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  
-  const education = [
-    {
-      degree: "Master of Computer Applications (MCA)",
-      school: "FAMT Ratnagiri, Mumbai University",
-      duration: "Pursuing (2026)",
-      achievements: ["Currently pursuing advanced studies in computer applications", "Focus on emerging technologies"],
-      description: "Advanced studies in software development, system design, and emerging technologies.",
-      icon: GraduationCap,
-      status: "In Progress",
-      highlight: "Current",
-      color: "purple"
-    },
-    {
-      degree: "Bachelor of Science in Computer Science (BSc CS)",
-      school: "ASP College, Devrukh, Mumbai University",
-      duration: "2024",
-      achievements: ["CGPA: 9.92/10", "Outstanding Academic Performance", "Department Topper"],
-      description: "Comprehensive study of computer science fundamentals, programming, and software engineering.",
-      icon: Trophy,
-      status: "Completed",
-      highlight: "Excellent",
-      color: "yellow"
-    },
-    {
-      degree: "Higher Secondary Education (HSC - Science)",
-      school: "G.K Sapare Jr. College of Science, Devrukh, MSBHSE",
-      duration: "2021",
-      achievements: ["Percentage: 89.66%", "Science Stream Excellence", "Merit Certificate"],
-      description: "Specialized in Science stream with focus on Mathematics, Physics, and Chemistry.",
-      icon: BookOpen,
-      status: "Completed",
-      highlight: "Merit",
-      color: "blue"
-    },
-    {
-      degree: "Secondary Education (SSC)",
-      school: "M.V. Sonavade High School, MSBSE",
-      duration: "2019",
-      achievements: ["Percentage: 86%", "Strong Foundation", "All-round Performance"],
-      description: "Completed secondary education with excellent academic performance.",
-      icon: Star,
-      status: "Completed",
-      highlight: "Good",
-      color: "green"
-    }
-  ];
+  const [activeCategory, setActiveCategory] = useState<"all" | "higher" | "schooling" | "certifications">("all");
+  const [viewMode, setViewMode] = useState<"cards" | "timeline">("cards");
 
-  const certifications = [
-    {
-      name: "Getting Started with Artificial Intelligence",
-      provider: "IBM SkillsBuild",
-      type: "AI & Machine Learning",
-      date: "2025",
-      description: "Introduction to AI fundamentals, applications, ethical considerations, and future industry impact through structured learning modules.",
-      skills: ["AI Basics", "Real-World Applications", "Ethical AI", "Future of AI"],
-      level: "Beginner"
-    },
-    {
-      name: "Introduction to Artificial Intelligence (MDL-211)",
-      provider: "IBM SkillsBuild",
-      type: "AI & Machine Learning",
-      date: "2025",
-      description: "Comprehensive training on core AI concepts, intelligent systems, problem-solving techniques, and introductory machine learning insights.",
-      skills: ["AI Fundamentals", "Intelligent Systems", "Problem-Solving with AI", "Applied Machine Learning"],
-      level: "Intermediate"
-    },
-    {
-      name: "Beginning Python",
-      provider: "Infosys Springboard",
-      type: "Programming",
-      date: "Jun 2025",
-      description: "Mastered Python fundamentals including data types, functions, loops, and problem-solving techniques",
-      skills: ["Python Basics", "Data Structures", "Algorithms", "Problem Solving"],
-      level: "Beginner"
-    },
-    {
-      name: "Creating GitHub Portfolios",
-      provider: "LinkedIn",
-      type: "Development",
-      date: "Jun 2025",
-      description: "Built and optimized professional developer portfolios on GitHub with best practices",
-      skills: ["GitHub", "Portfolio Design", "Documentation", "Version Control"],
-      level: "Intermediate"
-    },
-    {
-      name: "Git & GitHub Bootcamp",
-      provider: "LetsUpgrade",
-      type: "Version Control",
-      date: "Jun 2025",
-      description: "Comprehensive training on Git CLI, version control, collaboration workflows, and open source contribution",
-      skills: ["Git CLI", "Branching", "Merging", "Collaboration"],
-      level: "Intermediate"
-    },
-    {
-      name: "React Native Development",
-      provider: "Onwingspan",
-      type: "Mobile Development",
-      date: "Jun 2025",
-      description: "Built cross-platform mobile applications using React Native and JavaScript",
-      skills: ["React Native", "Mobile Development", "JavaScript", "Cross-platform"],
-      level: "Intermediate"
-    },
-    {
-      name: "UX/UI: Color Theory",
-      provider: "Onwingspan",
-      type: "Design",
-      date: "Jun 2025",
-      description: "Applied visual design principles and color theory to improve user interface and experience",
-      skills: ["Color Theory", "UI Design", "Visual Design", "User Experience"],
-      level: "Beginner"
-    },
-    {
-      name: "Web Development Workshop",
-      provider: "DevTown",
-      type: "Web Development",
-      date: "Nov 2022",
-      description: "Comprehensive workshop covering HTML, CSS, JavaScript, responsive design, and introduction to React",
-      skills: ["HTML", "CSS", "JavaScript", "React", "Responsive Design"],
-      level: "Beginner"
-    },
-    {
-      name: "MS-CIT",
-      provider: "Microsoft",
-      type: "Computer Literacy",
-      score: "89%",
-      description: "Comprehensive computer literacy certification covering essential digital skills",
-      skills: ["Computer Basics", "Microsoft Office", "Digital Literacy", "Internet Skills"],
-      level: "Certified"
-    }
-  ];
-
-  const additionalSkills = [
-    { name: "Adobe Photoshop", category: "Photo Editing", level: "Advanced", progress: 85 },
-    { name: "Filmora", category: "Video Editing", level: "Intermediate", progress: 70 },
-    { name: "Hardware Assembling", category: "Technical", level: "Intermediate", progress: 65 },
-    { name: "Instagram Clone Development", category: "Web Development", level: "Beginner", progress: 50 }
-  ];
-
-  const getColorClasses = (color: string) => {
-    const colors = {
-      purple: "border-purple-500/30 bg-purple-50/50 dark:bg-purple-900/20",
-      yellow: "border-yellow-500/30 bg-yellow-50/50 dark:bg-yellow-900/20",
-      blue: "border-blue-500/30 bg-blue-50/50 dark:bg-blue-900/20",
-      green: "border-green-500/30 bg-green-50/50 dark:bg-green-900/20"
-    };
-    return colors[color as keyof typeof colors] || colors.purple;
-  };
+  const filteredEducation = educationData.filter((item) => {
+    if (activeCategory === "all") return true;
+    return item.category === activeCategory;
+  });
 
   return (
-    <section id="education" className={`py-20 ${
-      isDark 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Title Section */}
-        <div 
-          ref={titleRef}
-          className={`text-center mb-12 transition-all duration-1000 ${
-            titleVisible ? 'animate-fade-in-scale' : 'opacity-0 translate-y-10'
-          }`}
+    <section
+      id="education"
+      className={`py-24 relative overflow-hidden transition-colors duration-300 ${
+        isDark ? "bg-slate-950" : "bg-slate-50"
+      }`}
+    >
+      {/* Decorative ambient background glows */}
+      <div className="absolute top-1/2 -left-48 w-96 h-96 bg-purple-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 -right-48 w-96 h-96 bg-blue-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <GraduationCap className="w-8 h-8 text-purple-600 animate-bounce" />
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Education & Certifications
-            </h2>
-            <Award className="w-8 h-8 text-blue-600 animate-bounce" style={{ animationDelay: '0.2s' }} />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <GraduationCap size={14} />
+            Complete Academic Journey
           </div>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto rounded-full animate-pulse"></div>
-        </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+            Education &{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              Credentials
+            </span>
+          </h2>
+          <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+            From foundational secondary schooling to postgraduate excellence: MCA (8.86 CGPA), BSc (9.92 CGPA), HSC (89.66%), and SSC (86.00%).
+          </p>
 
-        <Tabs defaultValue="education" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 h-14 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
-            <TabsTrigger value="education" className="text-base font-medium data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all duration-300">
-              🎓 Education
-            </TabsTrigger>
-            <TabsTrigger value="certifications" className="text-base font-medium data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
-              🏆 Certifications
-            </TabsTrigger>
-            <TabsTrigger value="skills" className="text-base font-medium data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all duration-300">
-              💡 Skills
-            </TabsTrigger>
-          </TabsList>
+          {/* Quick Stat Pill Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 max-w-2xl mx-auto">
+            <div className={`p-3 rounded-2xl border ${isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <div className="text-xl font-black text-amber-400">8.86 CGPA</div>
+              <div className="text-[11px] text-slate-400">MCA 3rd Rank</div>
+            </div>
+            <div className={`p-3 rounded-2xl border ${isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <div className="text-xl font-black text-blue-400">9.92 CGPA</div>
+              <div className="text-[11px] text-slate-400">BSc CS Topper</div>
+            </div>
+            <div className={`p-3 rounded-2xl border ${isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <div className="text-xl font-black text-emerald-400">89.66%</div>
+              <div className="text-[11px] text-slate-400">HSC (12th Science)</div>
+            </div>
+            <div className={`p-3 rounded-2xl border ${isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <div className="text-xl font-black text-purple-400">86.00%</div>
+              <div className="text-[11px] text-slate-400">SSC (10th Board)</div>
+            </div>
+          </div>
+        </motion.div>
 
-          {/* Education Tab with Interactive Cards */}
-          <TabsContent value="education" className="space-y-6">
-            {education.map((edu, index) => {
-              const IconComponent = edu.icon;
-              const isExpanded = expandedCard === index;
-              
+        {/* Filter Controls & View Switcher */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
+          {/* Filter Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto">
+            {[
+              { id: "all", label: "All Education (4)", icon: GraduationCap },
+              { id: "higher", label: "University (MCA & BSc)", icon: Trophy },
+              { id: "schooling", label: "Junior College & High School (HSC & SSC)", icon: School },
+              { id: "certifications", label: "Certifications (11)", icon: Award },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isSelected = activeCategory === tab.id;
               return (
-                <Card 
-                  key={index} 
-                  className={`group hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-1 border-2 ${getColorClasses(edu.color)} ${
-                    isExpanded ? 'scale-105 shadow-2xl' : ''
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveCategory(tab.id as "all" | "higher" | "schooling" | "certifications")}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all duration-200 ${
+                    isSelected
+                      ? "bg-purple-600 text-white shadow-lg shadow-purple-500/25 scale-[1.02]"
+                      : isDark
+                      ? "bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+                      : "bg-white border border-slate-200 text-slate-700 hover:border-purple-300 shadow-sm"
                   }`}
-                  onClick={() => setExpandedCard(isExpanded ? null : index)}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-full bg-gradient-to-br from-${edu.color}-100 to-${edu.color}-200 dark:from-${edu.color}-900/40 dark:to-${edu.color}-800/40 group-hover:scale-110 transition-transform duration-300`}>
-                          <IconComponent className={`w-6 h-6 text-${edu.color}-600`} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <CardTitle className="text-xl text-purple-600 group-hover:text-purple-700 transition-colors duration-300">
-                              {edu.degree}
-                            </CardTitle>
-                            <Badge variant="outline" className={`bg-${edu.color}-100 text-${edu.color}-700 dark:bg-${edu.color}-900/30 dark:text-${edu.color}-300`}>
-                              {edu.highlight}
-                            </Badge>
-                          </div>
-                          <CardDescription className="text-lg font-medium mb-2">
-                            {edu.school}
-                          </CardDescription>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm">
-                            {edu.description}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="flex items-center text-gray-500 text-sm">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          <span>{edu.duration}</span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-                          isExpanded ? 'rotate-180' : ''
-                        }`} />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className={`transition-all duration-500 overflow-hidden ${
-                    isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  }`}>
-                    <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <h4 className="font-semibold text-gray-800 dark:text-white mb-3">Key Achievements:</h4>
-                      {edu.achievements.map((achievement, idx) => (
-                        <div key={idx} className="flex items-start space-x-3 animate-slide-in-left" style={{ animationDelay: `${idx * 0.1}s` }}>
-                          <Check className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-                          <span className="text-gray-600 dark:text-gray-300">
-                            {achievement}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Icon size={14} />
+                  <span>{tab.label}</span>
+                </button>
               );
             })}
-          </TabsContent>
+          </div>
 
-          {/* Enhanced Certifications Tab */}
-          <TabsContent value="certifications" className="grid md:grid-cols-2 gap-6">
-            {certifications.map((cert, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-blue-50/30 dark:from-gray-800 dark:to-blue-900/20">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:scale-110 transition-transform duration-300">
-                      <Award className="w-6 h-6 text-blue-600" />
+          {/* View Toggle (Cards vs Timeline) when education is active */}
+          {activeCategory !== "certifications" && (
+            <div className={`inline-flex p-1 rounded-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+              <button
+                onClick={() => setViewMode("cards")}
+                aria-label="Cards view"
+                className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                  viewMode === "cards"
+                    ? "bg-purple-600 text-white shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <LayoutGrid size={14} />
+                <span className="hidden sm:inline">Cards</span>
+              </button>
+              <button
+                onClick={() => setViewMode("timeline")}
+                aria-label="Timeline view"
+                className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                  viewMode === "timeline"
+                    ? "bg-purple-600 text-white shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <GitCommit size={14} />
+                <span className="hidden sm:inline">Timeline</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Content Area */}
+        <AnimatePresence mode="wait">
+          {activeCategory === "certifications" ? (
+            /* Certifications View */
+            <motion.div
+              key="certifications-grid"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+              {certifications.map((cert, index) => (
+                <motion.div
+                  key={cert.title}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.04 }}
+                  whileHover={{ y: -4 }}
+                  className={`p-5 rounded-2xl border transition-all duration-300 shadow-md flex flex-col justify-between ${
+                    isDark
+                      ? "bg-slate-900/70 border-slate-800 hover:border-purple-500/40"
+                      : "bg-white border-slate-200 hover:border-purple-300 shadow-sm"
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                        <BookOpen size={16} />
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
+                        <Calendar size={11} />
+                        {cert.date}
+                      </span>
                     </div>
-                    <div className="flex gap-2">
-                      {cert.date && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                          {cert.date}
-                        </Badge>
-                      )}
-                      <Badge variant="outline" className="text-xs">
-                        {cert.level || cert.type}
-                      </Badge>
-                    </div>
+
+                    <h3 className="font-bold text-sm mb-1 text-slate-100 dark:text-white">
+                      {cert.title}
+                    </h3>
+                    <p className="text-xs font-medium text-purple-400 mb-3">
+                      {cert.issuer}
+                    </p>
+
+                    {cert.credentialId && (
+                      <div className="mb-3 text-[11px] text-slate-400 font-mono bg-slate-800/60 px-2.5 py-1 rounded-md inline-block border border-slate-700/50">
+                        ID: {cert.credentialId}
+                      </div>
+                    )}
                   </div>
-                  
-                  <h4 className="font-bold text-lg mb-2 text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors duration-300">
-                    {cert.name}
-                  </h4>
-                  
-                  <p className="text-blue-600 font-semibold text-sm mb-1">{cert.provider}</p>
-                  
-                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-                    {cert.description}
-                  </p>
 
-                  {cert.skills && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {cert.skills.map((skill, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {cert.score && (
-                    <div className="mt-4 p-3 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
-                      <p className="text-green-700 dark:text-green-400 font-bold text-center flex items-center justify-center gap-2">
-                        <Trophy className="w-4 h-4" />
-                        Score: {cert.score}
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-
-          {/* Enhanced Additional Skills Tab */}
-          <TabsContent value="skills">
-            <Card className="border-0 bg-gradient-to-br from-white to-green-50/30 dark:from-gray-800 dark:to-green-900/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-green-600 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  Additional Skills & Expertise
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {additionalSkills.map((skill, index) => (
-                    <div 
-                      key={index} 
-                      className="group p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-gray-800"
+                  <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-slate-200/20">
+                    {cert.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className={`text-[10px] px-2 py-0.5 rounded-md border ${
+                          isDark
+                            ? "bg-slate-800 border-slate-700 text-slate-300"
+                            : "bg-slate-50 border-slate-200 text-slate-600"
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : viewMode === "cards" ? (
+            /* Cards View for Education (MCA, BSc, HSC, SSC) */
+            <motion.div
+              key="education-cards"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="grid md:grid-cols-2 gap-6 sm:gap-8"
+            >
+              {filteredEducation.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08, duration: 0.4 }}
+                    className="h-full"
+                  >
+                    <TiltCard
+                      tiltDegree={7}
+                      scale={1.02}
+                      className={`h-full p-6 sm:p-8 rounded-3xl border shadow-xl flex flex-col justify-between transition-all duration-300 ${
+                        isDark
+                          ? "bg-slate-900/80 border-slate-800 hover:border-purple-500/50"
+                          : "bg-white border-slate-200 hover:border-purple-300 shadow-sm"
+                      }`}
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full group-hover:scale-125 transition-transform duration-300"></div>
-                          <div>
-                            <span className="font-semibold text-gray-800 dark:text-white group-hover:text-green-600 transition-colors duration-300">
-                              {skill.name}
-                            </span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {skill.category}
-                            </p>
+                      <div>
+                        {/* Top Bar: Icon + Distinction Badge */}
+                        <div className="flex items-start justify-between gap-3 mb-4">
+                          <div className={`p-3.5 rounded-2xl bg-gradient-to-tr ${item.accentColor} text-white shadow-lg shadow-purple-500/20`}>
+                            <Icon size={24} />
                           </div>
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5 shadow-sm">
+                            <Award size={13} />
+                            {item.distinction}
+                          </span>
                         </div>
-                        <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                          {skill.level}
-                        </Badge>
+
+                        {/* Degree Title & Field */}
+                        <h3 className="text-xl sm:text-2xl font-black text-slate-100 dark:text-white tracking-tight mb-1">
+                          {item.degree}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-2">
+                          {item.field}
+                        </p>
+                        <p className="text-sm font-medium text-slate-300 mb-1">
+                          {item.institution}
+                        </p>
+                        <p className="text-xs text-slate-400 mb-4 font-mono">
+                          {item.boardOrUniversity}
+                        </p>
+
+                        {/* Meta Pills: Period & Location */}
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mb-6 pb-4 border-b border-slate-200/20">
+                          <span className="flex items-center gap-1 bg-slate-800/40 px-2.5 py-1 rounded-lg">
+                            <Calendar size={13} className="text-purple-400" />
+                            {item.period}
+                          </span>
+                          <span className="flex items-center gap-1 bg-slate-800/40 px-2.5 py-1 rounded-lg">
+                            <MapPin size={13} className="text-amber-400" />
+                            {item.location}
+                          </span>
+                        </div>
+
+                        {/* Detailed Bullet Points */}
+                        <div className="space-y-2.5 mb-6">
+                          {item.description.map((desc, idx) => (
+                            <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm">
+                              <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                              <span className={isDark ? "text-slate-300" : "text-slate-700"}>
+                                {desc}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Tag Highlights */}
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                          {item.keyHighlights.map((hl) => (
+                            <span
+                              key={hl}
+                              className="text-[10px] sm:text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20"
+                            >
+                              {hl}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                      
-                      {/* Progress Bar */}
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
-                          style={{ 
-                            width: `${skill.progress}%`,
-                            animation: `slideInLeft 1s ease-out ${index * 0.2}s both`
-                          }}
-                        ></div>
+
+                      {/* Bottom Score Ribbon */}
+                      <div className="pt-4 border-t border-slate-200/20 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                          <TrendingUp size={14} className="text-emerald-400" />
+                          <span>Academic Performance</span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-xl sm:text-2xl font-black bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                            {item.score}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
-                        {skill.progress}% Proficiency
-                      </p>
+                    </TiltCard>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          ) : (
+            /* Interactive Timeline View */
+            <motion.div
+              key="education-timeline"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="max-w-4xl mx-auto space-y-8 relative before:absolute before:inset-0 before:left-4 sm:before:left-1/2 before:-translate-x-1/2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-purple-500 before:via-blue-500 before:to-emerald-500"
+            >
+              {filteredEducation.map((item, index) => {
+                const Icon = item.icon;
+                const isEven = index % 2 === 0;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: isEven ? -25 : 25 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className={`relative flex flex-col sm:flex-row items-start gap-6 ${
+                      isEven ? "sm:flex-row-reverse" : ""
+                    }`}
+                  >
+                    {/* Center Node Pin */}
+                    <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-4 w-9 h-9 rounded-2xl bg-slate-900 border-2 border-purple-400 text-purple-400 flex items-center justify-center shadow-lg shadow-purple-500/30 z-10">
+                      <Icon size={16} />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+
+                    {/* Content Card */}
+                    <div
+                      className={`ml-12 sm:ml-0 w-full sm:w-[calc(50%-2rem)] p-6 rounded-3xl border shadow-xl transition-all duration-300 hover:scale-[1.01] ${
+                        isDark
+                          ? "bg-slate-900/90 border-slate-800 hover:border-purple-500/40"
+                          : "bg-white border-slate-200 hover:border-purple-300 shadow-sm"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-xs font-mono font-bold text-purple-400 flex items-center gap-1">
+                          <Calendar size={13} />
+                          {item.period}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          {item.score}
+                        </span>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-slate-100 dark:text-white mb-0.5">
+                        {item.degree}
+                      </h3>
+                      <p className="text-xs font-semibold text-purple-400 mb-1">
+                        {item.field}
+                      </p>
+                      <p className="text-xs text-slate-300 mb-2">
+                        {item.institution} • <span className="text-slate-400">{item.location}</span>
+                      </p>
+
+                      <div className="p-2.5 rounded-xl bg-slate-800/40 border border-slate-700/50 mb-3 text-xs text-amber-400 font-semibold flex items-center gap-1.5">
+                        <Award size={14} />
+                        <span>{item.distinction}</span>
+                      </div>
+
+                      <ul className="space-y-1.5 text-xs text-slate-300 mb-3">
+                        {item.description.map((desc, dIdx) => (
+                          <li key={dIdx} className="flex items-start gap-1.5">
+                            <span className="text-purple-400 mt-0.5">•</span>
+                            <span>{desc}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="flex flex-wrap gap-1">
+                        {item.keyHighlights.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

@@ -1,340 +1,200 @@
-import { Trophy, Award, Users, Code, Star, Target, Calendar, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Trophy,
+  Award,
+  BookOpen,
+  FileCheck2,
+  Sparkles,
+  ExternalLink,
+  Flame,
+  Star,
+} from "lucide-react";
+import { motion } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useState, useEffect } from "react";
+import TiltCard from "./TiltCard";
+import { triggerConfetti } from "@/utils/confetti";
 
 const Achievements = () => {
   const { isDark } = useTheme();
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [animatedStats, setAnimatedStats] = useState<{ [key: string]: number }>({});
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimatedStats({
-        "9.92": 9.92,
-        "89%": 89,
-        "6+": 6,
-        "7+": 7
-      });
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-  
-  const achievements = [
+
+  const achievementsList = [
     {
-      icon: Trophy,
-      title: "Tech Carnival 2023 - PPT Competition Head",
-      description: "Led and organized the PowerPoint presentation competition at Tech Carnival 2023, showcasing leadership and organizational skills",
-      date: "2023",
-      color: "text-yellow-600"
+      icon: BookOpen,
+      badge: "Published Research",
+      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      title: "SkinFusion-Net: Cross-Attention Hybrid Deep Learning",
+      subtitle: "Published in IJSRST (International Journal of Scientific Research in Science and Technology)",
+      period: "2026",
+      description:
+        "Co-authored peer-reviewed research paper introducing a cross-attention hybrid deep learning network for skin disease categorization, demonstrating superior precision over standard convolutional networks.",
+      highlights: [
+        "Peer-reviewed journal publication",
+        "Hybrid cross-attention mechanism",
+        "Evaluated on benchmark dermatological datasets",
+      ],
     },
     {
       icon: Award,
-      title: "Outstanding Academic Performance",
-      description: "Achieved 9.92 CGPA in BSc Computer Science, demonstrating consistent academic excellence",
-      date: "2024",
-      color: "text-blue-600"
+      badge: "Academic Distinction",
+      badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      title: "3rd Rank in Master of Computer Applications (MCA)",
+      subtitle: "Finolex Academy of Management & Technology (FAMT), Ratnagiri",
+      period: "2024 – 2026",
+      description:
+        "Ranked 3rd across the entire MCA cohort with a stellar cumulative grade point average of 8.86 CGPA, demonstrating top-tier academic rigor in software architecture, distributed systems, and database engineering.",
+      highlights: [
+        "8.86 Cumulative Grade Point Average",
+        "3rd Rank University Program Honors",
+        "Leadership in technical workshops",
+      ],
     },
     {
-      icon: Users,
-      title: "Project Work & Industrial Training",
-      description: "Successfully completed multiple projects using React, Flutter & Django, gaining practical industry experience",
-      date: "2022-2024",
-      color: "text-green-600"
+      icon: Trophy,
+      badge: "Department Topper",
+      badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      title: "Topper in Bachelor of Science (Computer Science)",
+      subtitle: "Nya. Tatyasaheb Athalye Arts, Sapre Commerce & Pitre Science College",
+      period: "2021 – 2024",
+      description:
+        "Graduated with the highest academic honors in the Computer Science department with an outstanding 9.92 CGPA over three years of intensive computer science coursework.",
+      highlights: [
+        "9.92 CGPA across 6 semesters",
+        "Consistent Department Rank 1",
+        "Excellence in algorithms & programming",
+      ],
     },
     {
-      icon: Code,
-      title: "Multiple Certifications Achieved",
-      description: "Completed various technical certifications including React Native, Python, Git & GitHub, and MS-CIT with 89% score",
-      date: "2022-2025",
-      color: "text-purple-600"
-    }
-  ];
-
-  const sportsAchievements = [
-    {
-      icon: Star,
-      title: "Senior State Kho-Kho Competition",
-      description: "Selected for Senior State Kho-Kho Competition 2023-24 representing Ratnagiri District",
-      date: "2023-24",
-      color: "text-orange-600"
+      icon: Flame,
+      badge: "State-Level Sports",
+      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+      title: "Mumbai University Representative in Kho-Kho",
+      subtitle: "Zonal Level & Ratnagiri District Senior State Championship",
+      period: "2023 – 2024",
+      description:
+        "Selected to represent Mumbai University in Kho-Kho sports competitions at the Zonal Level. Selected as a key player representing Ratnagiri District in the Senior State Championship.",
+      highlights: [
+        "Mumbai University Zonal Representation",
+        "Ratnagiri District Senior State Selection",
+        "High agility, tactical discipline & team leadership",
+      ],
     },
-    {
-      icon: Target,
-      title: "MU Inter Zonal Men Kho-Kho",
-      description: "Represented Mumbai University Inter Zonal Men Kho-Kho 2023-24 for Kokan Zone",
-      date: "2023-24",
-      color: "text-red-600"
-    }
-  ];
-
-  const stats = [
-    { number: "9.92", label: "CGPA in BSc CS" },
-    { number: "89%", label: "MS-CIT Score" },
-    { number: "6+", label: "Major Projects" },
-    { number: "7+", label: "Certifications" }
-  ];
-
-  const additionalAchievements = [
-    { name: "Elementary Drawing Examination - Grade A", icon: "🎨", category: "Creative" },
-    { name: "IT-Quiz Competition Participant", icon: "🧠", category: "Technical" },
-    { name: "Instagram Clone Bootcamp Completion", icon: "📱", category: "Development" },
-    { name: "Hardware Assembling Workshop", icon: "🔧", category: "Technical" },
-    { name: "Multiple Web Development Workshops", icon: "💻", category: "Development" }
   ];
 
   return (
-    <section id="achievements" className={`py-20 ${
-      isDark 
-        ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
-        : 'bg-gradient-to-br from-white to-gray-50'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className={`text-4xl font-bold mb-4 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>Achievements & Activities</h2>
-          <div className="w-24 h-1 bg-purple-600 mx-auto"></div>
-          <p className={`text-lg mt-4 ${
-            isDark ? 'text-gray-300' : 'text-gray-600'
-          }`}>Academic excellence, technical achievements, and sports accomplishments.</p>
+    <section
+      id="achievements"
+      className={`py-24 relative overflow-hidden transition-colors duration-300 ${
+        isDark ? "bg-slate-900/50" : "bg-white"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Trophy size={14} />
+            Honors & Distinctions
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+            Achievements &{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              Publications
+            </span>
+          </h2>
+          <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+            Recognized for peer-reviewed machine learning research, university academic ranks, and state-level athletic leadership.
+          </p>
         </div>
 
-        {/* Enhanced Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => (
-            <div 
-              key={index} 
-              className={`group relative overflow-hidden rounded-2xl p-8 text-center transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer ${
-                isDark 
-                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 hover:border-purple-500/50' 
-                  : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 hover:border-purple-500/50'
-              } shadow-lg hover:shadow-2xl`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Animated Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Icon */}
-              <div className="relative z-10 mb-4">
-                <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
+        {/* Research Publication Spotlight Banner */}
+        <div
+          className={`p-6 sm:p-8 rounded-3xl border mb-12 shadow-2xl relative overflow-hidden ${
+            isDark
+              ? "bg-gradient-to-r from-purple-950/40 via-slate-900 to-blue-950/40 border-purple-500/30"
+              : "bg-gradient-to-r from-purple-50 via-white to-blue-50 border-purple-200"
+          }`}
+        >
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+            <div className="space-y-2 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5">
+                  <Star size={13} className="text-amber-400 fill-amber-400" />
+                  Peer-Reviewed Journal Publication
+                </span>
+                <span className="text-xs text-slate-400 font-mono">IJSRST • 2026</span>
               </div>
-              
-              {/* Number with animation */}
-              <div className="relative z-10 text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
-                {stat.number}
-              </div>
-              
-              {/* Label */}
-              <div className={`relative z-10 font-medium transition-colors duration-300 ${
-                isDark ? 'text-gray-300 group-hover:text-white' : 'text-gray-600 group-hover:text-gray-800'
-              }`}>
-                {stat.label}
-              </div>
-              
-              {/* Hover effect line */}
-              <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500 group-hover:w-full transition-all duration-500"></div>
+
+              <h3 className="text-xl sm:text-2xl font-extrabold text-slate-100 dark:text-white">
+                SkinFusion-Net: Cross-Attention Hybrid Deep Learning for Skin Disease Classification
+              </h3>
+              <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                Authored innovative biomedical computer vision model combining cross-attention mechanisms with convolutional neural networks for accurate multi-class dermatological diagnostics.
+              </p>
             </div>
-          ))}
-        </div>
 
-        {/* Academic & Technical Achievements */}
-        <div className="mb-12">
-          <h3 className={`text-2xl font-bold mb-8 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>Academic & Technical Achievements</h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            {achievements.map((achievement, index) => (
-              <div 
-                key={index} 
-                className={`group relative overflow-hidden rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 hover:border-purple-500/50' 
-                    : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 hover:border-purple-500/50'
-                } shadow-lg hover:shadow-2xl`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onMouseEnter={() => setHoveredCard(`achievement-${index}`)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                {/* Header */}
-                <div className="relative z-10 flex items-center space-x-6 mb-6">
-                  <div className={`p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg ${
-                    hoveredCard === `achievement-${index}` 
-                      ? 'bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg' 
-                      : isDark ? 'bg-gray-700' : 'bg-gray-100'
-                  }`}>
-                    <achievement.icon 
-                      size={28} 
-                      className={hoveredCard === `achievement-${index}` ? 'text-white' : achievement.color}
-                    />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h4 className={`text-xl font-bold transition-colors duration-300 ${
-                      isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-                    }`}>
-                      {achievement.title}
-                    </h4>
-                    
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Calendar className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <span className={`text-sm font-medium ${
-                        isDark ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        {achievement.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Content */}
-                <div className="relative z-10">
-                  <p className={`leading-relaxed transition-colors duration-300 ${
-                    isDark ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-600 group-hover:text-gray-700'
-                  }`}>
-                    {achievement.description}
-                  </p>
-                </div>
-                
-                {/* Hover effect line */}
-                <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500 group-hover:w-full transition-all duration-500"></div>
+            <div className="flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 text-center">
+                <div className="text-xl font-extrabold text-purple-400">Co-Author</div>
+                <div className="text-[11px] text-slate-400">Research Scholar</div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
-        {/* Sports Achievements */}
-        <div className="mb-12">
-          <h3 className={`text-2xl font-bold mb-8 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>Sports Achievements</h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            {sportsAchievements.map((achievement, index) => (
-              <div 
-                key={index} 
-                className={`group relative overflow-hidden rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 hover:border-orange-500/50' 
-                    : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 hover:border-orange-500/50'
-                } shadow-lg hover:shadow-2xl`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onMouseEnter={() => setHoveredCard(`sports-${index}`)}
-                onMouseLeave={() => setHoveredCard(null)}
+        {/* 4 Key Achievement Cards with 3D TiltCards */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {achievementsList.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="h-full"
               >
-                {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                {/* Header */}
-                <div className="relative z-10 flex items-center space-x-6 mb-6">
-                  <div className={`p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg ${
-                    hoveredCard === `sports-${index}` 
-                      ? 'bg-gradient-to-br from-orange-500 to-red-500 shadow-lg' 
-                      : isDark ? 'bg-gray-700' : 'bg-gray-100'
-                  }`}>
-                    <achievement.icon 
-                      size={28} 
-                      className={hoveredCard === `sports-${index}` ? 'text-white' : achievement.color}
-                    />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h4 className={`text-xl font-bold transition-colors duration-300 ${
-                      isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-                    }`}>
-                      {achievement.title}
-                    </h4>
-                    
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Calendar className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <span className={`text-sm font-medium ${
-                        isDark ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        {achievement.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Content */}
-                <div className="relative z-10">
-                  <p className={`leading-relaxed transition-colors duration-300 ${
-                    isDark ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-600 group-hover:text-gray-700'
-                  }`}>
-                    {achievement.description}
-                  </p>
-                </div>
-                
-                {/* Hover effect line */}
-                <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-orange-500 to-red-500 group-hover:w-full transition-all duration-500"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Enhanced Additional Achievements */}
-        <div className={`group relative overflow-hidden rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border backdrop-blur-sm ${
-          isDark 
-            ? 'bg-gray-800/80 border-gray-700/50 hover:border-cyan-500/50' 
-            : 'bg-white/80 border-gray-200/50 hover:border-cyan-500/50'
-        }`}>
-          {/* Background Animation */}
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div className="relative z-10">
-            <div className="flex items-center justify-center mb-8">
-              <div className="p-4 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            
-            <h3 className={`text-3xl font-bold mb-8 text-center transition-colors duration-300 ${
-              isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-            }`}>Additional Achievements & Activities</h3>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {additionalAchievements.map((achievement, index) => (
-                <div 
-                  key={index} 
-                  className={`group/item relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:-translate-y-1 cursor-pointer ${
-                    isDark 
-                      ? 'bg-gray-700/50 hover:bg-gray-700/80 border border-gray-600/50 hover:border-cyan-500/50' 
-                      : 'bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200/50 hover:border-cyan-500/50'
-                  } shadow-md hover:shadow-lg`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                <TiltCard
+                  tiltDegree={8}
+                  scale={1.02}
+                  className={`h-full p-6 sm:p-7 rounded-3xl border transition-all duration-300 shadow-xl flex flex-col justify-between ${
+                    isDark
+                      ? "bg-slate-800/60 border-slate-700/70 hover:border-purple-500/50"
+                      : "bg-white border-slate-200 hover:border-purple-300 shadow-sm"
+                  }`}
                 >
-                  {/* Enhanced Category Badge */}
-                  <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold shadow-md transition-all duration-300 group-hover/item:scale-110 ${
-                    achievement.category === 'Creative' ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white' :
-                    achievement.category === 'Technical' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' :
-                    'bg-gradient-to-r from-cyan-500 to-teal-500 text-white'
-                  }`}>
-                    {achievement.category}
-                  </div>
-                  
-                  <div className="flex items-start space-x-4">
-                    <div className="text-4xl transition-transform duration-300 group-hover/item:scale-110">
-                      {achievement.icon}
-                    </div>
-                    <div className="flex-1 pt-2">
-                      <span className={`font-semibold transition-colors duration-300 ${
-                        isDark ? 'text-gray-300 group-hover/item:text-white' : 'text-gray-700 group-hover/item:text-gray-900'
-                      }`}>
-                        {achievement.name}
+                  <div>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="p-3 rounded-2xl bg-purple-500/10 text-purple-400">
+                        <Icon size={22} />
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${item.badgeColor}`}>
+                        {item.badge}
                       </span>
                     </div>
+
+                    <h3 className="text-lg sm:text-xl font-bold mb-1 text-slate-100 dark:text-white">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs font-semibold text-purple-400 mb-3">
+                      {item.subtitle} • {item.period}
+                    </p>
+
+                    <p className={`text-xs sm:text-sm leading-relaxed mb-4 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                      {item.description}
+                    </p>
                   </div>
-                  
-                  {/* Hover effect line */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-cyan-500 to-teal-500 group-hover/item:w-full transition-all duration-300"></div>
-                </div>
-              ))}
-            </div>
-          </div>
+
+                  <div className="space-y-1.5 pt-4 border-t border-slate-200/20">
+                    {item.highlights.map((highlight, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs text-slate-400">
+                        <FileCheck2 size={13} className="text-emerald-400 flex-shrink-0" />
+                        <span>{highlight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </TiltCard>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

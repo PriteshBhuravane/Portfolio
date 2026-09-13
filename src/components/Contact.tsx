@@ -1,58 +1,95 @@
 import { useState } from "react";
-import { Mail, MapPin, Github, Linkedin } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Mail,
+  MapPin,
+  Github,
+  Linkedin,
+  Phone,
+  Send,
+  Check,
+  Copy,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/contexts/ThemeContext";
-// Add EmailJS import
 import emailjs from "emailjs-com";
+import { triggerConfetti } from "@/utils/confetti";
+import SignalBeaconModel from "./SignalBeaconModel";
 
 const Contact = () => {
   const { isDark } = useTheme();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "",
     message: "",
   });
+  const [isSending, setIsSending] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
   const { toast } = useToast();
 
-  // EmailJS handler
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("bhuravanepritesh@gmail.com");
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+    toast({
+      title: "Email Copied!",
+      description: "bhuravanepritesh@gmail.com copied to clipboard.",
+    });
+  };
+
+  const handleCopyPhone = () => {
+    navigator.clipboard.writeText("+91 9405059038");
+    setCopiedPhone(true);
+    setTimeout(() => setCopiedPhone(false), 2000);
+    toast({
+      title: "Phone Number Copied!",
+      description: "+91 9405059038 copied to clipboard.",
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
 
     emailjs
       .send(
-        "service_385tiwl", // Replace with your EmailJS service ID
-        "template_7qwprjx", // Replace with your EmailJS template ID
+        "service_385tiwl",
+        "template_7qwprjx",
         {
           from_name: formData.name,
           from_email: formData.email,
+          subject: formData.subject || "Portfolio Inquiry",
           message: formData.message,
-          time: new Date().toISOString(), 
+          time: new Date().toISOString(),
         },
-        "rcp2lXoohA4k7p5Sx" // Replace with your EmailJS user/public key
+        "rcp2lXoohA4k7p5Sx"
       )
       .then(() => {
+        setIsSending(false);
+        triggerConfetti();
         toast({
-          title: "Message Sent!",
-          description: "Thank you for your message. I'll get back to you soon!",
+          title: "Message Sent Successfully!",
+          description: "Thank you for reaching out, Pritesh will respond promptly.",
         });
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", subject: "", message: "" });
       })
       .catch(() => {
+        setIsSending(false);
         toast({
-          title: "Error",
-          description: "Failed to send message. Please try again later.",
-          variant: "destructive",
+          title: "Notice",
+          description: "Opening default mail client to deliver your message directly.",
         });
+        const mailto = `mailto:bhuravanepritesh@gmail.com?subject=${encodeURIComponent(
+          formData.subject || "Portfolio Contact: " + formData.name
+        )}&body=${encodeURIComponent(formData.message + "\n\nFrom: " + formData.name + " (" + formData.email + ")")}`;
+        window.location.href = mailto;
       });
   };
 
@@ -65,219 +102,284 @@ const Contact = () => {
     });
   };
 
-  const handleResumeDownload = () => {
-    const link = document.createElement("a");
-    link.href = "/Pritesh_Bhuravane_Resume.pdf";
-    link.download = "Pritesh_Bhuravane_Resume.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <section
       id="contact"
-      className={`py-20 ${
-        isDark
-          ? "bg-gradient-to-br from-gray-900 to-gray-800"
-          : "bg-gradient-to-br from-slate-50 to-blue-50"
+      className={`py-24 relative overflow-hidden transition-colors duration-300 ${
+        isDark ? "bg-slate-950" : "bg-slate-50"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2
-            className={`text-4xl font-bold mb-4 ${
-              isDark ? "text-white" : "text-gray-800"
-            }`}
-          >
-            Get In Touch
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <MessageSquare size={14} />
+            Let's Connect
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+            Get in{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              Touch
+            </span>
           </h2>
-          <div className="w-24 h-1 bg-purple-600 mx-auto"></div>
-          <p
-            className={`text-lg mt-4 ${
-              isDark ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            Let's discuss your next project or just say hello!
+          <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+            Available for software engineering roles, DevOps opportunities, and technical collaborations.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div className="space-y-8">
-            <div>
-              <h3
-                className={`text-2xl font-bold mb-6 ${
-                  isDark ? "text-white" : "text-gray-800"
-                }`}
-              >
-                Contact Information
-              </h3>
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Column: Direct Info & Social Cards */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 space-y-6"
+          >
+            <div
+              className={`p-6 sm:p-8 rounded-3xl border shadow-xl ${
+                isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200"
+              }`}
+            >
+              <h3 className="text-xl sm:text-2xl font-bold mb-3">Contact Information</h3>
+              <p className="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed">
+                Whether you have an opportunity to discuss, questions about my projects, or DevOps inquiries, feel free to reach out directly.
+              </p>
+
               <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div
-                    className={`p-3 rounded-full ${
-                      isDark ? "bg-purple-900" : "bg-purple-100"
-                    }`}
+                {/* Email Item */}
+                <div
+                  className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${
+                    isDark ? "bg-slate-800/50 border-slate-700" : "bg-slate-50 border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 flex-shrink-0">
+                      <Mail size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[11px] text-slate-400">Email Address</div>
+                      <a
+                        href="mailto:bhuravanepritesh@gmail.com"
+                        className="text-xs sm:text-sm font-semibold truncate block hover:text-purple-400 transition-colors"
+                      >
+                        bhuravanepritesh@gmail.com
+                      </a>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleCopyEmail}
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700 transition-colors flex-shrink-0 cursor-pointer"
+                    title="Copy Email"
                   >
-                    <Mail className="text-purple-600" size={20} />
-                  </div>
-                  <div>
-                    <div
-                      className={`font-medium ${
-                        isDark ? "text-white" : "text-gray-800"
-                      }`}
-                    >
-                      Email
-                    </div>
-                    <div className={isDark ? "text-gray-300" : "text-gray-600"}>
-                      pritesh.bhuravane@example.com
-                    </div>
-                  </div>
+                    {copiedEmail ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                  </button>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <div
-                    className={`p-3 rounded-full ${
-                      isDark ? "bg-purple-900" : "bg-purple-100"
-                    }`}
+                {/* Phone Item */}
+                <div
+                  className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${
+                    isDark ? "bg-slate-800/50 border-slate-700" : "bg-slate-50 border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 flex-shrink-0">
+                      <Phone size={18} />
+                    </div>
+                    <div>
+                      <div className="text-[11px] text-slate-400">Phone Number</div>
+                      <a
+                        href="tel:9405059038"
+                        className="text-xs sm:text-sm font-semibold hover:text-purple-400 transition-colors"
+                      >
+                        +91 9405059038
+                      </a>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleCopyPhone}
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700 transition-colors flex-shrink-0 cursor-pointer"
+                    title="Copy Phone"
                   >
-                    <MapPin className="text-purple-600" size={20} />
+                    {copiedPhone ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                  </button>
+                </div>
+
+                {/* Location Item */}
+                <div
+                  className={`p-4 rounded-2xl border flex items-center gap-3 ${
+                    isDark ? "bg-slate-800/50 border-slate-700" : "bg-slate-50 border-slate-200"
+                  }`}
+                >
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 flex-shrink-0">
+                    <MapPin size={18} />
                   </div>
                   <div>
-                    <div
-                      className={`font-medium ${
-                        isDark ? "text-white" : "text-gray-800"
-                      }`}
-                    >
-                      Location
-                    </div>
-                    <div className={isDark ? "text-gray-300" : "text-gray-600"}>
+                    <div className="text-[11px] text-slate-400">Location</div>
+                    <div className="text-xs sm:text-sm font-semibold">
                       Ratnagiri, Maharashtra, India
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h3
-                className={`text-xl font-bold mb-4 ${
-                  isDark ? "text-white" : "text-gray-800"
-                }`}
-              >
-                Connect With Me
-              </h3>
-              <div className="flex space-x-4">
-                <a
-                  href="https://github.com/PriteshBhuravane"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-gray-800 text-white p-3 rounded-full hover:bg-gray-700 transition-colors duration-200"
-                >
-                  <Github size={20} />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/pritesh-bhuravane/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors duration-200"
-                >
-                  <Linkedin size={20} />
-                </a>
-                <a
-                  href="mailto:bhuravanepritesh@gmail.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors duration-200"
-                >
-                  <Mail size={20} />
-                </a>
+              {/* Social Channels */}
+              <div className="mt-8 pt-6 border-t border-slate-200/20">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Online Profiles
+                </div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://github.com/PriteshBhuravane"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-2xl border border-slate-700/60 bg-slate-800/50 hover:bg-slate-800 text-xs font-semibold flex items-center justify-center gap-2 hover:text-purple-400 transition-all hover:scale-105"
+                  >
+                    <Github size={16} />
+                    <span>GitHub</span>
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/pritesh-bhuravane/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-2xl border border-slate-700/60 bg-slate-800/50 hover:bg-slate-800 text-xs font-semibold flex items-center justify-center gap-2 hover:text-purple-400 transition-all hover:scale-105"
+                  >
+                    <Linkedin size={16} />
+                    <span>LinkedIn</span>
+                  </a>
+                </div>
               </div>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-purple-600">
-                  Download Resume
-                </CardTitle>
-                <CardDescription>
-                  Get a copy of my latest resume
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  onClick={handleResumeDownload}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                >
-                  Download PDF Resume
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+            {/* Live Signal Beacon Model */}
+            <div className="mt-6">
+              <SignalBeaconModel />
+            </div>
+          </motion.div>
 
-          {/* Contact Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle
-                className={`text-2xl ${
-                  isDark ? "text-white" : "text-gray-800"
-                }`}
-              >
-                Send Message
-              </CardTitle>
-              <CardDescription>
-                Fill out the form below and I'll get back to you as soon as
-                possible.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Right Column: Contact Message Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7"
+          >
+            <div
+              className={`p-6 sm:p-8 rounded-3xl border shadow-xl ${
+                isDark ? "bg-slate-900/80 border-slate-800" : "bg-white border-slate-200"
+              }`}
+            >
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold mb-1">Send a Direct Message</h3>
+                <p className="text-xs sm:text-sm text-slate-400">
+                  Fill out your details below and I will get back to you promptly.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">
+                      Your Name *
+                    </label>
+                    <Input
+                      type="text"
+                      name="name"
+                      placeholder="e.g. John Doe"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className={`h-11 rounded-xl text-xs sm:text-sm ${
+                        isDark
+                          ? "bg-slate-800/80 border-slate-700 text-white placeholder-slate-500"
+                          : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
+                      }`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">
+                      Your Email *
+                    </label>
+                    <Input
+                      type="email"
+                      name="email"
+                      placeholder="e.g. john@company.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className={`h-11 rounded-xl text-xs sm:text-sm ${
+                        isDark
+                          ? "bg-slate-800/80 border-slate-700 text-white placeholder-slate-500"
+                          : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
+                      }`}
+                    />
+                  </div>
+                </div>
+
                 <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1.5">
+                    Subject / Topic
+                  </label>
                   <Input
                     type="text"
-                    name="name"
-                    placeholder="Your Name"
-                    value={formData.name}
+                    name="subject"
+                    placeholder="e.g. DevOps Engineer Opening / Project Consultation"
+                    value={formData.subject}
                     onChange={handleChange}
-                    required
-                    className="w-full"
+                    className={`h-11 rounded-xl text-xs sm:text-sm ${
+                      isDark
+                        ? "bg-slate-800/80 border-slate-700 text-white placeholder-slate-500"
+                        : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <Input
-                    type="email"
-                    name="email"
-                    placeholder="Your Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1.5">
+                    Your Message *
+                  </label>
                   <Textarea
                     name="message"
-                    placeholder="Your Message"
+                    placeholder="Describe your project, role, or questions..."
                     value={formData.message}
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full"
+                    className={`rounded-xl text-xs sm:text-sm resize-none ${
+                      isDark
+                        ? "bg-slate-800/80 border-slate-700 text-white placeholder-slate-500"
+                        : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
+                    }`}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  disabled={isSending}
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold text-sm shadow-xl shadow-purple-500/20 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.01] cursor-pointer"
                 >
-                  Send Message
+                  {isSending ? (
+                    <span>Sending message...</span>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      <span>Send Direct Message</span>
+                    </>
+                  )}
                 </Button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

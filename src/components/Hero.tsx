@@ -1,245 +1,507 @@
+import { useState, useEffect } from "react";
 import {
   ArrowDown,
   Github,
   Linkedin,
   Mail,
+  Phone,
   Download,
+  FileText,
+  Terminal,
+  MapPin,
+  ExternalLink,
+  ChevronRight,
+  Award,
+  Rotate3d,
   Sparkles,
-  Code,
-  Rocket,
+  Play,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useScrollAnimation, useParallax } from "@/hooks/useScrollAnimation";
 import ParticleBackground from "./ParticleBackground";
-import { useEffect, useState } from "react";
+import ResumeModal from "./ResumeModal";
+import InteractiveTechOrbit from "./InteractiveTechOrbit";
+import AnimatedTechBadges from "./AnimatedTechBadges";
+import { triggerConfetti, triggerStarConfetti } from "@/utils/confetti";
+
+const TITLES = [
+  "Software Developer",
+  "Backend & REST API Engineer",
+  "DevOps & Linux Administrator",
+  "MCA Graduate (3rd Rank, 8.86 CGPA)",
+  "Full-Stack Web & Mobile Creator",
+];
 
 const Hero = () => {
   const { isDark } = useTheme();
-  const { elementRef, isVisible } = useScrollAnimation({ triggerOnce: true });
-  const offsetY = useParallax();
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const titles = [
-    "Full Stack Developer",
-    "MCA Student",
-    "Problem Solver",
-    "Tech Enthusiast",
-  ];
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [activeTerminalTab, setActiveTerminalTab] = useState<"status" | "skills" | "contact" | "deploy">("status");
+  const [rightViewMode, setRightViewMode] = useState<"terminal" | "3d-orbit">("terminal");
 
   useEffect(() => {
-    const currentTitle = titles[currentIndex];
+    const currentTitle = TITLES[currentIndex];
     if (displayText.length < currentTitle.length) {
       const timer = setTimeout(() => {
         setDisplayText(currentTitle.slice(0, displayText.length + 1));
-      }, 100);
+      }, 65);
       return () => clearTimeout(timer);
     } else {
       const timer = setTimeout(() => {
         setDisplayText("");
-        setCurrentIndex((prev) => (prev + 1) % titles.length);
-      }, 2000);
+        setCurrentIndex((prev) => (prev + 1) % TITLES.length);
+      }, 2200);
       return () => clearTimeout(timer);
     }
   }, [displayText, currentIndex]);
 
   const handleResumeDownload = () => {
-  const link = document.createElement("a");
-  link.href = "/Pritesh_Bhuravane_Resume.pdf";
-  link.download = "Pritesh_Bhuravane_Resume.pdf";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+    triggerConfetti();
+    const link = document.createElement("a");
+    link.href = "/Pritesh_Bhuravane_Resume.pdf";
+    link.download = "Pritesh_Bhuravane_Resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleCelebrate = () => {
+    triggerStarConfetti();
+  };
 
   return (
     <section
-      ref={elementRef}
       id="home"
-      className={`min-h-screen flex items-center justify-center pt-16 relative overflow-hidden ${
+      className={`min-h-screen flex items-center justify-center pt-28 pb-16 relative overflow-hidden transition-colors duration-300 ${
         isDark
-          ? "bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-100"
+          ? "bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950"
+          : "bg-gradient-to-b from-slate-50 via-white to-slate-100"
       }`}
-      style={{ transform: `translateY(${offsetY * 0.5}px)` }}
     >
       <ParticleBackground />
 
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className={`absolute -top-40 -right-40 w-96 h-96 ${
-            isDark ? "bg-purple-500/20" : "bg-purple-500/10"
-          } rounded-full blur-3xl animate-float`}
-        ></div>
-        <div
-          className={`absolute -bottom-40 -left-40 w-96 h-96 ${
-            isDark ? "bg-blue-500/20" : "bg-blue-500/10"
-          } rounded-full blur-3xl animate-float`}
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 ${
-            isDark
-              ? "bg-gradient-to-r from-purple-600/10 to-blue-600/10"
-              : "bg-gradient-to-r from-purple-400/10 to-blue-400/10"
-          } rounded-full blur-2xl animate-pulse`}
-        ></div>
+      {/* Decorative Blur Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34rem] h-[34rem] rounded-full bg-purple-500/10 blur-[130px] animate-pulse-soft" />
+        <div className="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-blue-500/10 blur-[120px] animate-float" />
+        <div className="absolute bottom-10 -left-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[120px] animate-float-slow" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div className={`${isVisible ? "animate-fade-in-scale" : "opacity-0"}`}>
-          {/* Animated Name */}
-          <div className="flex items-center justify-center mb-6 group">
-            <Sparkles
-              className="text-purple-400 mr-2 animate-pulse"
-              size={32}
-            />
-            <h1
-              className={`text-5xl md:text-7xl font-bold mb-6 ${
-                isDark ? "text-white" : "text-gray-900"
-              } hover:scale-105 transition-all duration-500 cursor-pointer`}
-            >
-              <span className="inline-block animate-slide-in-left">
-                Pritesh
-              </span>{" "}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent animate-gradient-x animate-slide-in-right">
-                Bhuravane
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="grid lg:grid-cols-12 gap-10 items-center">
+          {/* Left Column: Introductions & Actions */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-6 text-center lg:text-left space-y-6"
+          >
+            {/* Status Pills */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                DevOps Executive @ Pleximus Inc
               </span>
-            </h1>
-            <Sparkles className="text-blue-400 ml-2 animate-pulse" size={32} />
-          </div>
 
-          {/* Typewriter Effect */}
-          <div className="h-12 mb-8 flex items-center justify-center">
-            <h2
-              className={`text-2xl md:text-3xl font-medium flex items-center ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              <Code className="mr-2 text-purple-400 animate-bounce" size={28} />
-              {displayText}
-              <span className="animate-blink ml-1 border-r-2 border-purple-400 h-8"></span>
-            </h2>
-          </div>
-
-          {/* Animated Description */}
-          <div
-            className={`${isVisible ? "animate-slide-in-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.5s" }}
-          >
-            <p
-              className={`text-xl mb-12 max-w-3xl mx-auto leading-relaxed ${
-                isDark ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              🚀 Building modern, responsive web applications with cutting-edge
-              technologies.
-              <br />
-              🎓 MCA Student passionate about creating seamless user experiences
-              and robust solutions.
-            </p>
-          </div>
-
-          {/* Interactive Buttons */}
-          <div
-            className={`flex flex-col sm:flex-row gap-4 justify-center mb-12 ${
-              isVisible ? "animate-bounce-in" : "opacity-0"
-            }`}
-            style={{ animationDelay: "1s" }}
-          >
-            <Button
-              onClick={handleResumeDownload}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 group neon-border animate-glow"
-            >
-              <Download className="mr-2 group-hover:animate-bounce" size={20} />
-              Download Resume
-              <Rocket className="ml-2 group-hover:animate-bounce" size={20} />
-            </Button>
-            <Button
-              variant="outline"
-              className={`glass-effect border-purple-500 text-purple-400 hover:bg-purple-600 hover:text-white px-8 py-4 text-lg bg-transparent hover:scale-110 transition-all duration-300 hover:shadow-lg neon-border ${
-                isDark ? "hover:bg-purple-600" : "hover:bg-purple-600"
-              }`}
-              onClick={() =>
-                document
-                  .getElementById("contact")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Contact Me
-            </Button>
-          </div>
-
-          {/* Social Links with Hover Effects */}
-          <div
-            className={`flex justify-center space-x-6 mb-12 ${
-              isVisible ? "animate-slide-in-up" : "opacity-0"
-            }`}
-            style={{ animationDelay: "1.5s" }}
-          >
-            {[
-              {
-                icon: Github,
-                href: "https://github.com/PriteshBhuravane",
-                color: "hover:text-purple-400",
-              },
-              {
-                icon: Linkedin,
-                href: "https://www.linkedin.com/in/pritesh-bhuravane/",
-                color: "hover:text-blue-400",
-              },
-              {
-                icon: Mail,
-                href: "mailto:bhuravanepritesh@gmail.com",
-                color: "hover:text-green-400",
-              },
-            ].map(({ icon: Icon, href, color }, index) => (
-              <a
-                key={index}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${
-                  isDark ? "text-gray-400" : "text-gray-600"
-                } ${color} transition-all duration-300 hover:scale-125 hover:-translate-y-2 group relative`}
-              >
-                <Icon size={36} className="group-hover:animate-pulse" />
-                <div className="absolute inset-0 bg-purple-400/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300 -z-10"></div>
-              </a>
-            ))}
-          </div>
-
-          {/* Animated Scroll Indicator */}
-          <div
-            className={`animate-bounce cursor-pointer group ${
-              isVisible ? "animate-fade-in-scale" : "opacity-0"
-            }`}
-            style={{ animationDelay: "2s" }}
-            onClick={() =>
-              document
-                .getElementById("about")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            <div className="flex flex-col items-center">
-              <span
-                className={`text-sm mb-2 ${
-                  isDark ? "text-gray-400" : "text-gray-600"
-                } group-hover:text-purple-400 transition-colors`}
-              >
-                Scroll Down
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm">
+                <Award size={13} />
+                3rd Rank MCA (8.86 CGPA)
               </span>
-              <ArrowDown
-                className="text-purple-400 hover:text-purple-300 transition-colors duration-300 group-hover:scale-110"
-                size={32}
-              />
-              <div className="w-1 h-8 bg-gradient-to-b from-purple-400 to-transparent mt-2 animate-pulse"></div>
+
+              <button
+                onClick={handleCelebrate}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 transition-all cursor-pointer shadow-sm hover:scale-105"
+                title="Click to celebrate!"
+              >
+                <Sparkles size={13} className="text-amber-400 animate-spin-slow" />
+                <span>Celebrate</span>
+              </button>
             </div>
-          </div>
+
+            {/* Main Name & Title */}
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-widest mb-2">
+                Hello, World! I am
+              </p>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight">
+                <span className={isDark ? "text-white" : "text-slate-900"}>Pritesh </span>
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  Bhuravane
+                </span>
+              </h1>
+            </div>
+
+            {/* Typewriter Line */}
+            <div className="h-10 flex items-center justify-center lg:justify-start">
+              <div
+                className={`text-base sm:text-xl md:text-2xl font-mono font-medium flex items-center ${
+                  isDark ? "text-slate-300" : "text-slate-700"
+                }`}
+              >
+                <span className="text-purple-400 mr-2">&gt;</span>
+                <span className="truncate max-w-[280px] sm:max-w-none">{displayText}</span>
+                <span className="inline-block w-2.5 h-6 ml-1 bg-purple-400 animate-pulse flex-shrink-0" />
+              </div>
+            </div>
+
+            {/* Subtitle / Bio summary */}
+            <p
+              className={`text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 ${
+                isDark ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
+              Software Developer specializing in <strong className="text-purple-400">Backend Development</strong>,{" "}
+              <strong className="text-blue-400">Linux Server Administration</strong>, and{" "}
+              <strong className="text-emerald-400">DevOps Automation</strong>. MCA Graduate from FAMT Ratnagiri (3rd Rank, 8.86 CGPA) with proven production deployment and API architecture experience.
+            </p>
+
+            {/* Quick Contact metadata */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 text-xs sm:text-sm text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={14} className="text-amber-400" />
+                Ratnagiri, Maharashtra
+              </span>
+              <a
+                href="mailto:bhuravanepritesh@gmail.com"
+                className="flex items-center gap-1.5 hover:text-purple-400 transition-colors"
+              >
+                <Mail size={14} className="text-blue-400" />
+                bhuravanepritesh@gmail.com
+              </a>
+              <a
+                href="tel:9405059038"
+                className="flex items-center gap-1.5 hover:text-purple-400 transition-colors"
+              >
+                <Phone size={14} className="text-emerald-400" />
+                +91 9405059038
+              </a>
+            </div>
+
+            {/* Call to Actions */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+              <Button
+                onClick={handleResumeDownload}
+                className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-5 sm:px-6 py-5 rounded-2xl shadow-xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 font-semibold text-xs sm:text-sm flex items-center gap-2"
+              >
+                <Download size={16} />
+                Download Resume
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  triggerConfetti();
+                  setIsResumeModalOpen(true);
+                }}
+                className={`px-4 sm:px-5 py-5 rounded-2xl border transition-all duration-300 hover:scale-105 font-medium text-xs sm:text-sm flex items-center gap-2 ${
+                  isDark
+                    ? "border-slate-700 bg-slate-800/80 text-slate-200 hover:bg-slate-700"
+                    : "border-slate-300 bg-white/80 text-slate-800 hover:bg-slate-100 shadow-sm"
+                }`}
+              >
+                <FileText size={16} className="text-purple-400" />
+                Interactive Resume
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+                className="px-3 sm:px-4 py-5 rounded-2xl text-slate-400 hover:text-purple-400 transition-all text-xs sm:text-sm font-medium flex items-center gap-1.5"
+              >
+                <span>View Projects</span>
+                <ChevronRight size={15} />
+              </Button>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center justify-center lg:justify-start gap-3 pt-2">
+              {[
+                { icon: Github, href: "https://github.com/PriteshBhuravane", label: "GitHub" },
+                { icon: Linkedin, href: "https://www.linkedin.com/in/pritesh-bhuravane/", label: "LinkedIn" },
+                { icon: Mail, href: "mailto:bhuravanepritesh@gmail.com", label: "Email" },
+              ].map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className={`p-3 rounded-2xl border transition-all duration-300 hover:scale-110 hover:-translate-y-1 ${
+                    isDark
+                      ? "border-slate-800 bg-slate-900/90 text-slate-400 hover:text-white hover:border-purple-500/50 shadow-md"
+                      : "border-slate-200 bg-white/90 text-slate-600 hover:text-purple-600 hover:border-purple-300 shadow-sm"
+                  }`}
+                >
+                  <Icon size={18} />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right Column: Interactive DevOps Terminal OR 3D Tech Orbit Model */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-6 relative"
+          >
+            {/* Floating Tech Badges around the right container */}
+            <AnimatedTechBadges />
+
+            {/* Switcher Bar on Top of the interactive window */}
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                <button
+                  onClick={() => setRightViewMode("terminal")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                    rightViewMode === "terminal"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Terminal size={14} />
+                  <span>DevOps Terminal</span>
+                </button>
+                <button
+                  onClick={() => setRightViewMode("3d-orbit")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                    rightViewMode === "3d-orbit"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Rotate3d size={14} />
+                  <span>3D Tech Orbit</span>
+                </button>
+              </div>
+
+              <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                Live Interactive Mode
+              </span>
+            </div>
+
+            {/* View Mode Switching */}
+            <AnimatePresence mode="wait">
+              {rightViewMode === "terminal" ? (
+                /* Terminal Component */
+                <motion.div
+                  key="terminal-window"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.25 }}
+                  className={`rounded-3xl border shadow-2xl overflow-hidden transition-all duration-300 ${
+                    isDark
+                      ? "bg-slate-900/95 border-slate-700/80 shadow-black/50"
+                      : "bg-slate-950 text-slate-100 border-slate-800 shadow-slate-400/30"
+                  }`}
+                >
+                  {/* Terminal Window Bar */}
+                  <div className="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-rose-500/90 inline-block" />
+                      <span className="w-3 h-3 rounded-full bg-amber-500/90 inline-block" />
+                      <span className="w-3 h-3 rounded-full bg-emerald-500/90 inline-block" />
+                      <span className="ml-2 text-xs font-mono text-slate-400 flex items-center gap-1">
+                        <Terminal size={12} />
+                        pritesh@ratnagiri-server:~
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[11px] font-mono">
+                      {(["status", "skills", "deploy", "contact"] as const).map((tab) => (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveTerminalTab(tab)}
+                          className={`px-2 py-0.5 rounded transition-colors ${
+                            activeTerminalTab === tab
+                              ? "bg-purple-500/20 text-purple-300 font-semibold"
+                              : "text-slate-400 hover:text-slate-200"
+                          }`}
+                        >
+                          {tab}.sh
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Terminal Output Screen */}
+                  <div className="p-5 font-mono text-xs leading-relaxed space-y-3 min-h-[330px]">
+                    {activeTerminalTab === "status" && (
+                      <>
+                        <div className="text-slate-400">
+                          $ <span className="text-purple-400">neofetch</span> --engineer
+                        </div>
+                        <div className="text-slate-200">
+                          <span className="text-emerald-400 font-bold">User:</span> Pritesh Suresh Bhuravane
+                        </div>
+                        <div className="text-slate-300">
+                          <span className="text-cyan-400 font-bold">Current Role:</span> DevOps Executive @ Pleximus Inc
+                        </div>
+                        <div className="text-slate-300">
+                          <span className="text-blue-400 font-bold">Past Role:</span> Backend Developer Intern @ Pleximus Inc
+                        </div>
+                        <div className="text-slate-300">
+                          <span className="text-amber-400 font-bold">Academics:</span> MCA (FAMT, 8.86 CGPA, 3rd Rank)
+                        </div>
+                        <div className="text-slate-300">
+                          <span className="text-pink-400 font-bold">Research:</span> "SkinFusion-Net" (IJSRST Published)
+                        </div>
+                        <div className="text-slate-300">
+                          <span className="text-emerald-400 font-bold">Stack:</span> PHP, Laravel, Node.js, React, Linux, Nginx, Docker
+                        </div>
+                        <div className="pt-2 text-slate-500 text-[11px]">
+                          // Server health: optimal • zero alerts • 99.9% uptime
+                        </div>
+                      </>
+                    )}
+
+                    {activeTerminalTab === "skills" && (
+                      <>
+                        <div className="text-slate-400">
+                          $ <span className="text-purple-400">cat</span> stack.config.json
+                        </div>
+                        <pre className="text-emerald-300 text-[11px] overflow-x-auto">
+{`{
+  "backend": ["Laravel 11", "Node.js", "Express.js", "PHP 8.2"],
+  "devops": ["Linux Ubuntu 22.04", "Nginx", "GitLab CI", "AWS EC2", "Docker"],
+  "frontend": ["React.js", "React Native", "Flutter", "Tailwind CSS"],
+  "databases": ["MySQL", "MongoDB", "Firebase Firestore"],
+  "education": ["MCA (8.86)", "BSc CS (9.92)", "HSC (89.66%)", "SSC (86%)"]
+}`}
+                        </pre>
+                      </>
+                    )}
+
+                    {activeTerminalTab === "deploy" && (
+                      <>
+                        <div className="text-slate-400">
+                          $ <span className="text-purple-400">bash</span> deploy-pipeline.sh --env=production
+                        </div>
+                        <div className="text-slate-300 space-y-1 text-[11px]">
+                          <div className="text-emerald-400">✔ Git checkout: branch main (commit #8a4f91)</div>
+                          <div className="text-blue-400">✔ Running composer & npm production install... done</div>
+                          <div className="text-emerald-400">✔ Migrating MySQL schemas & running database seeders... done</div>
+                          <div className="text-cyan-400">✔ Reloading Nginx reverse proxy configuration... OK</div>
+                          <div className="text-amber-400">✔ Systemd service restarted: plekimus-api.service active (running)</div>
+                          <div className="text-purple-400 font-bold mt-1">🚀 Application successfully deployed with zero downtime!</div>
+                        </div>
+                      </>
+                    )}
+
+                    {activeTerminalTab === "contact" && (
+                      <>
+                        <div className="text-slate-400">
+                          $ <span className="text-purple-400">curl</span> -X GET /api/v1/pritesh/contact
+                        </div>
+                        <div className="text-slate-300 space-y-1">
+                          <div>
+                            <span className="text-amber-400">location:</span> "Ratnagiri, Maharashtra, India"
+                          </div>
+                          <div>
+                            <span className="text-blue-400">email:</span> "bhuravanepritesh@gmail.com"
+                          </div>
+                          <div>
+                            <span className="text-emerald-400">phone:</span> "+91 9405059038"
+                          </div>
+                          <div>
+                            <span className="text-purple-400">linkedin:</span> "linkedin.com/in/pritesh-bhuravane"
+                          </div>
+                          <div>
+                            <span className="text-pink-400">portfolio:</span> "portfolio-gamma-opal-5be8cvvw26.vercel.app"
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="flex items-center text-slate-500 pt-2">
+                      <span className="text-emerald-400 mr-2">➜</span>
+                      <span className="text-slate-400">~</span>
+                      <span className="inline-block w-2 h-4 ml-1.5 bg-emerald-400 animate-pulse" />
+                    </div>
+                  </div>
+
+                  {/* Terminal Footer Quick Links */}
+                  <div className="px-4 py-2.5 bg-slate-900/90 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>Ratnagiri Cluster • Node 01</span>
+                    <a
+                      href="https://github.com/PriteshBhuravane"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-purple-300 flex items-center gap-1"
+                    >
+                      <span>github.com/PriteshBhuravane</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  </div>
+                </motion.div>
+              ) : (
+                /* 3D Orbit Component */
+                <motion.div
+                  key="orbit-window"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <InteractiveTechOrbit />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
+        {/* Floating Quick Stats Ribbon */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3.5"
+        >
+          {[
+            { value: "8.86", label: "MCA CGPA", sub: "3rd Rank in Program" },
+            { value: "9.92", label: "BSc CS CGPA", sub: "Department Topper" },
+            { value: "89.66%", label: "HSC (12th)", sub: "First Class Distinction" },
+            { value: "86.00%", label: "SSC (10th)", sub: "First Class Distinction" },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className={`p-4 rounded-2xl border text-center transition-all duration-300 hover:-translate-y-1 shadow-sm ${
+                isDark
+                  ? "bg-slate-900/70 border-slate-800 text-slate-200 hover:border-purple-500/40"
+                  : "bg-white/80 border-slate-200 text-slate-800 shadow-sm hover:border-purple-300"
+              }`}
+            >
+              <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                {stat.value}
+              </div>
+              <div className="text-xs font-bold uppercase tracking-wider mt-1">
+                {stat.label}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                {stat.sub}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Scroll Down Cue */}
+        <div className="mt-12 flex justify-center">
+          <button
+            onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+            className="group flex flex-col items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-purple-400 transition-colors cursor-pointer"
+          >
+            <span>Explore Portfolio</span>
+            <ArrowDown size={18} className="animate-bounce text-purple-400" />
+          </button>
         </div>
       </div>
+
+      {/* Resume Modal */}
+      <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
     </section>
   );
 };

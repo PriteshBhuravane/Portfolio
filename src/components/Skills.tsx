@@ -1,319 +1,347 @@
+import { useState, useMemo } from "react";
+import {
+  Code,
+  Server,
+  Terminal,
+  Smartphone,
+  Database,
+  ShieldCheck,
+  Search,
+  CheckCircle,
+  Cpu,
+  Layers,
+  Sparkles,
+} from "lucide-react";
+import { motion } from "motion/react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useState, useEffect } from "react";
-import { Code, Database, Globe, Zap } from "lucide-react";
+import ArchitectureFlowModel from "./ArchitectureFlowModel";
+import TiltCard from "./TiltCard";
+
+interface Skill {
+  name: string;
+  category: "languages" | "backend" | "devops" | "frontend" | "databases" | "competencies";
+  proficiency: number;
+  level: string;
+  experience: string;
+  tags: string[];
+}
+
+const skillsData: Skill[] = [
+  // Languages
+  { name: "PHP", category: "languages", proficiency: 90, level: "Advanced", experience: "Pleximus Inc & Laravel Projects", tags: ["Backend", "Object-Oriented", "MVC"] },
+  { name: "JavaScript (ES6+)", category: "languages", proficiency: 92, level: "Advanced", experience: "React.js & Node.js ecosystem", tags: ["Frontend", "Async", "Full-Stack"] },
+  { name: "Python", category: "languages", proficiency: 85, level: "Proficient", experience: "Django, YOLOv8, NLP & ML", tags: ["AI/ML", "Django", "Scikit-Learn"] },
+  { name: "HTML5", category: "languages", proficiency: 95, level: "Master", experience: "Semantic markup & accessible UX", tags: ["Markup", "Accessibility"] },
+  { name: "CSS3 / Modern Styling", category: "languages", proficiency: 90, level: "Advanced", experience: "Tailwind CSS, Flexbox, Grid", tags: ["Responsive", "Animations"] },
+
+  // Backend & APIs
+  { name: "Laravel", category: "backend", proficiency: 90, level: "Advanced", experience: "Production backends & APIs", tags: ["PHP", "Artisan", "Eloquent ORM"] },
+  { name: "Node.js", category: "backend", proficiency: 86, level: "Proficient", experience: "Event-driven microservices", tags: ["JavaScript", "Runtime", "APIs"] },
+  { name: "Express.js", category: "backend", proficiency: 85, level: "Proficient", experience: "REST APIs & Middleware", tags: ["Routing", "Middleware", "Auth"] },
+  { name: "REST APIs", category: "backend", proficiency: 92, level: "Advanced", experience: "API architecture, Postman testing", tags: ["Endpoints", "JSON", "Security"] },
+
+  // DevOps & Infrastructure
+  { name: "Linux Server Administration", category: "devops", proficiency: 92, level: "Advanced", experience: "DevOps Executive @ Pleximus Inc", tags: ["Ubuntu", "CLI", "Cron", "SSH"] },
+  { name: "Ubuntu LTS", category: "devops", proficiency: 90, level: "Advanced", experience: "Host configuration & permissions", tags: ["OS", "SysAdmin", "Security"] },
+  { name: "Nginx Reverse Proxy", category: "devops", proficiency: 88, level: "Advanced", experience: "SSL configs, proxy passes, routing", tags: ["Web Server", "Load Balance"] },
+  { name: "Git & GitLab", category: "devops", proficiency: 92, level: "Advanced", experience: "Branching, CI/CD, merge workflows", tags: ["VCS", "CI/CD Pipelines"] },
+  { name: "AWS / EC2", category: "devops", proficiency: 80, level: "Proficient", experience: "Cloud instance deployment", tags: ["Cloud", "Instances", "Security Groups"] },
+  { name: "Application Deployment", category: "devops", proficiency: 90, level: "Advanced", experience: "Zero-downtime server deployments", tags: ["Production", "Troubleshooting"] },
+
+  // Frontend & Mobile
+  { name: "React.js", category: "frontend", proficiency: 90, level: "Advanced", experience: "Code Editor, GitHub Explorer, NewsPortal", tags: ["Hooks", "Context", "Vite"] },
+  { name: "React Native", category: "frontend", proficiency: 84, level: "Proficient", experience: "Pet Adoption mobile application", tags: ["Cross-Platform", "Mobile"] },
+  { name: "Flutter & Dart", category: "frontend", proficiency: 82, level: "Proficient", experience: "ShopMatcher e-commerce app", tags: ["Widgets", "Android", "Cross-Platform"] },
+
+  // Databases
+  { name: "MySQL", category: "databases", proficiency: 90, level: "Advanced", experience: "Schema design, relational indexes, queries", tags: ["SQL", "Relational", "Optimization"] },
+  { name: "MongoDB", category: "databases", proficiency: 82, level: "Proficient", experience: "Document stores, aggregation pipelines", tags: ["NoSQL", "Mongoose"] },
+  { name: "Firebase (Firestore & Auth)", category: "databases", proficiency: 85, level: "Proficient", experience: "Mobile real-time sync & auth", tags: ["BaaS", "Realtime", "Cloud"] },
+
+  // Core Competencies
+  { name: "Authentication & Security", category: "competencies", proficiency: 88, level: "Advanced", experience: "JWT, Session tokens, OAuth flows", tags: ["Security", "Role-Based Access"] },
+  { name: "Database Optimization", category: "competencies", proficiency: 86, level: "Proficient", experience: "Query profiling, index strategies", tags: ["Performance", "Scaling"] },
+  { name: "API Integration", category: "competencies", proficiency: 92, level: "Advanced", experience: "Payment gateways (Razorpay), GitHub", tags: ["Webhooks", "JSON Payloads"] },
+  { name: "Responsive UI Architecture", category: "competencies", proficiency: 92, level: "Advanced", experience: "Mobile-first layouts & modern UX", tags: ["Tailwind", "Accessibility"] },
+];
+
+const categoryTabs = [
+  { id: "all", label: "All Skills", icon: Cpu },
+  { id: "backend", label: "Backend & APIs", icon: Server },
+  { id: "devops", label: "DevOps & Linux", icon: Terminal },
+  { id: "languages", label: "Languages", icon: Code },
+  { id: "frontend", label: "Frontend & Mobile", icon: Smartphone },
+  { id: "databases", label: "Databases", icon: Database },
+  { id: "competencies", label: "Competencies", icon: ShieldCheck },
+];
 
 const Skills = () => {
   const { isDark } = useTheme();
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const [animatedLevels, setAnimatedLevels] = useState<{ [key: string]: number }>({});
-  
-  const skills = {
-    "Programming Languages": {
-      icon: Code,
-      color: "from-blue-500 to-cyan-500",
-      skills: [
-        { name: "Java", level: 90 },
-        { name: "Python", level: 85 },
-        { name: "JavaScript", level: 88 },
-        { name: "HTML5", level: 95 },
-        { name: "CSS3", level: 90 }
-      ]
-    },
-    "Frameworks & Technologies": {
-      icon: Globe,
-      color: "from-green-500 to-emerald-500",
-      skills: [
-        { name: "React.js", level: 85 },
-        { name: "React Native", level: 80 },
-        { name: "Flutter", level: 82 },
-        { name: "Python Django", level: 78 },
-        { name: "Node.js", level: 75 }
-      ]
-    },
-    "Databases & Tools": {
-      icon: Database,
-      color: "from-purple-500 to-pink-500",
-      skills: [
-        { name: "MySQL", level: 85 },
-        { name: "Firebase", level: 80 },
-        { name: "MongoDB", level: 78 },
-        { name: "Git & GitHub", level: 92 },
-        { name: "Linux", level: 75 },
-        { name: "Windows", level: 95 }
-      ]
-    }
-  };
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"model" | "cards" | "both">("both");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const newAnimatedLevels: { [key: string]: number } = {};
-      Object.values(skills).forEach(category => {
-        category.skills.forEach(skill => {
-          newAnimatedLevels[skill.name] = skill.level;
-        });
-      });
-      setAnimatedLevels(newAnimatedLevels);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  const additionalSkills = [
-    { name: "Adobe Photoshop - Photo Editing", icon: "🎨", category: "Creative" },
-    { name: "Filmora - Video Editing", icon: "🎬", category: "Creative" },
-    { name: "Microsoft Word & Excel", icon: "📊", category: "Productivity" },
-    { name: "Hardware Assembling", icon: "🔧", category: "Technical" },
-    { name: "REST APIs Integration", icon: "🔌", category: "Development" },
-    { name: "Responsive Web Design", icon: "📱", category: "Development" }
-  ];
-
-  const personalSkills = [
-    { name: "Resourceful & Deeply Passionate", icon: "🔥", level: 98 },
-    { name: "Unafraid of Challenges", icon: "💪", level: 95 },
-    { name: "Strong Analytical & Problem-Solving", icon: "🧠", level: 95 },
-    { name: "Adaptability & Quick Learning", icon: "⚡", level: 90 },
-    { name: "Time Management & Organization", icon: "⏰", level: 88 },
-    { name: "Effective Communication", icon: "💬", level: 85 },
-    { name: "Team Collaboration", icon: "🤝", level: 92 },
-    { name: "Leadership", icon: "👑", level: 80 },
-    { name: "Loyalty Runs Deep", icon: "❤️", level: 100 }
-
-  ];
+  const filteredSkills = useMemo(() => {
+    return skillsData.filter((skill) => {
+      const matchesCategory =
+        activeCategory === "all" || skill.category === activeCategory;
+      const matchesSearch =
+        skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        skill.experience.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        skill.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   return (
-    <section id="skills" className={`py-20 ${
-      isDark 
-        ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
-        : 'bg-gradient-to-br from-white to-gray-50'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className={`text-4xl font-bold mb-4 ${
-            isDark ? 'text-white' : 'text-gray-900'
-          }`}>Technical Skills</h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-blue-400 mx-auto"></div>
-          <p className={`text-lg mt-4 ${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}>Technologies and tools I work with to build amazing applications.</p>
-        </div>
+    <section
+      id="skills"
+      className={`py-24 relative overflow-hidden transition-colors duration-300 ${
+        isDark ? "bg-slate-900/40" : "bg-white"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Code size={14} />
+            Technical Expertise & Architecture
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+            Skills &{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              Proficiencies
+            </span>
+          </h2>
+          <p className={`text-base sm:text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+            Curated toolkit covering backend development, DevOps automation, cloud databases, and multi-platform engineering.
+          </p>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {Object.entries(skills).map(([category, categoryData]) => {
-            const Icon = categoryData.icon;
-            return (
-              <div 
-                key={category} 
-                className={`group relative overflow-hidden rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border backdrop-blur-sm ${
-                  isDark 
-                    ? 'bg-gray-800/80 border-gray-700/50 hover:border-gray-600' 
-                    : 'bg-white/80 border-gray-200/50 hover:border-gray-300'
-                } hover:scale-105 hover:-translate-y-2`}
-              >
-                {/* Gradient Background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${categoryData.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
-                
-                {/* Header */}
-                <div className="relative z-10 flex items-center justify-center mb-8">
-                  <div className={`p-4 rounded-full bg-gradient-to-br ${categoryData.color} shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
-                    <Icon className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                
-                <h3 className={`text-xl font-bold mb-8 text-center transition-colors duration-300 ${
-                  isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-                }`}>{category}</h3>
-                
-                {/* Skills */}
-                <div className="space-y-6 relative z-10">
-                  {categoryData.skills.map((skill, index) => (
-                    <div 
-                      key={skill.name}
-                      className="skill-item"
-                      onMouseEnter={() => setHoveredSkill(skill.name)}
-                      onMouseLeave={() => setHoveredSkill(null)}
-                      style={{ animationDelay: `${index * 0.1}s` }}
+          {/* View Mode Switcher */}
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <button
+              onClick={() => setViewMode("both")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer ${
+                viewMode === "both"
+                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                  : "bg-slate-800/80 text-slate-400 hover:text-white border border-slate-700"
+              }`}
+            >
+              <Sparkles size={13} />
+              <span>Full View</span>
+            </button>
+            <button
+              onClick={() => setViewMode("model")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer ${
+                viewMode === "model"
+                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                  : "bg-slate-800/80 text-slate-400 hover:text-white border border-slate-700"
+              }`}
+            >
+              <Cpu size={13} />
+              <span>3D Architecture Model</span>
+            </button>
+            <button
+              onClick={() => setViewMode("cards")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer ${
+                viewMode === "cards"
+                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/25"
+                  : "bg-slate-800/80 text-slate-400 hover:text-white border border-slate-700"
+              }`}
+            >
+              <Layers size={13} />
+              <span>Skills Matrix ({skillsData.length})</span>
+            </button>
+          </div>
+        </motion.div>
+
+        {/* 3D System Architecture Model */}
+        {(viewMode === "model" || viewMode === "both") && (
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-14"
+          >
+            <ArchitectureFlowModel />
+          </motion.div>
+        )}
+
+        {/* Filter Controls & Cards Grid */}
+        {(viewMode === "cards" || viewMode === "both") && (
+          <>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                {categoryTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isSelected = activeCategory === tab.id;
+                  const count =
+                    tab.id === "all"
+                      ? skillsData.length
+                      : skillsData.filter((s) => s.category === tab.id).length;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveCategory(tab.id)}
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 cursor-pointer ${
+                        isSelected
+                          ? "bg-purple-600 text-white shadow-lg shadow-purple-500/25 scale-105"
+                          : isDark
+                          ? "bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-slate-200"
+                          : "bg-slate-100 border border-slate-200 text-slate-700 hover:border-purple-300"
+                      }`}
                     >
-                      <div className="flex justify-between items-center mb-3">
-                        <span className={`font-semibold transition-all duration-300 ${
-                          hoveredSkill === skill.name 
-                            ? `bg-gradient-to-r ${categoryData.color} bg-clip-text text-transparent` 
-                            : isDark ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          {skill.name}
-                        </span>
-                        <span className={`text-sm font-bold px-2 py-1 rounded-full transition-all duration-300 ${
-                          hoveredSkill === skill.name 
-                            ? `bg-gradient-to-r ${categoryData.color} text-white shadow-lg` 
-                            : isDark ? 'text-gray-400 bg-gray-700/50' : 'text-gray-500 bg-gray-100'
-                        }`}>
-                          {skill.level}%
-                        </span>
-                      </div>
-                      
-                      <div className={`w-full rounded-full h-3 overflow-hidden transition-all duration-300 ${
-                        isDark ? 'bg-gray-700' : 'bg-gray-200'
-                      } ${hoveredSkill === skill.name ? 'shadow-inner' : ''}`}>
-                        <div 
-                          className={`h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden bg-gradient-to-r ${categoryData.color} ${
-                            hoveredSkill === skill.name ? 'shadow-lg animate-pulse' : ''
-                          }`}
-                          style={{ 
-                            width: `${animatedLevels[skill.name] || 0}%`,
-                            transform: hoveredSkill === skill.name ? 'scaleY(1.2)' : 'scaleY(1)'
-                          }}
-                        >
-                          {hoveredSkill === skill.name && (
-                            <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Enhanced Additional Skills Section */}
-        <div className={`group relative overflow-hidden rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border backdrop-blur-sm mb-12 ${
-          isDark 
-            ? 'bg-gray-800/80 border-gray-700/50 hover:border-purple-500/50' 
-            : 'bg-white/80 border-gray-200/50 hover:border-purple-500/50'
-        }`}>
-          {/* Background Animation */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div className="relative z-10">
-            <div className="flex items-center justify-center mb-8">
-              <div className="p-4 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            
-            <h3 className={`text-3xl font-bold mb-8 text-center transition-colors duration-300 ${
-              isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-            }`}>Additional Skills & Tools</h3>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {additionalSkills.map((skill, index) => (
-                <div 
-                  key={index} 
-                  className={`group/item relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:scale-105 hover:-translate-y-1 cursor-pointer ${
-                    isDark 
-                      ? 'bg-gray-700/50 hover:bg-gray-700/80 border border-gray-600/50 hover:border-purple-500/50' 
-                      : 'bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200/50 hover:border-purple-500/50'
-                  } shadow-md hover:shadow-lg`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {/* Enhanced Category Badge */}
-                  <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-bold shadow-md transition-all duration-300 group-hover/item:scale-110 ${
-                    skill.category === 'Creative' ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white' :
-                    skill.category === 'Productivity' ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' :
-                    skill.category === 'Technical' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' :
-                    'bg-gradient-to-r from-purple-500 to-violet-500 text-white'
-                  }`}>
-                    {skill.category}
-                  </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <div className="text-3xl transition-transform duration-300 group-hover/item:scale-110">
-                      {skill.icon}
-                    </div>
-                    <div className="flex-1">
-                      <span className={`font-semibold transition-colors duration-300 ${
-                        isDark ? 'text-gray-300 group-hover/item:text-white' : 'text-gray-700 group-hover/item:text-gray-900'
-                      }`}>
-                        {skill.name}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Hover effect line */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500 group-hover/item:w-full transition-all duration-300"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Personal Skills */}
-        <div className={`group relative overflow-hidden rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border backdrop-blur-sm ${
-          isDark 
-            ? 'bg-gray-800/80 border-gray-700/50 hover:border-green-500/50' 
-            : 'bg-white/80 border-gray-200/50 hover:border-green-500/50'
-        }`}>
-          {/* Background Animation */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div className="relative z-10">
-            <div className="flex items-center justify-center mb-8">
-              <div className="p-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <Code className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            
-            <h3 className={`text-3xl font-bold mb-12 text-center transition-colors duration-300 ${
-              isDark ? 'text-white group-hover:text-gray-100' : 'text-gray-800 group-hover:text-gray-900'
-            }`}>Personal Skills</h3>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {personalSkills.map((skill, index) => (
-                <div 
-                  key={index} 
-                  className={`group/skill relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:-translate-y-2 cursor-pointer ${
-                    isDark 
-                      ? 'bg-gray-700/50 hover:bg-gray-700/80 border border-gray-600/50 hover:border-green-500/50' 
-                      : 'bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200/50 hover:border-green-500/50'
-                  } shadow-md hover:shadow-lg`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {/* Header */}
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="text-3xl transition-transform duration-300 group-hover/skill:scale-110">
-                      {skill.icon}
-                    </div>
-                    <div className="flex-1">
-                      <span className={`font-bold text-lg transition-colors duration-300 ${
-                        isDark ? 'text-gray-300 group-hover/skill:text-white' : 'text-gray-700 group-hover/skill:text-gray-900'
-                      }`}>
-                        {skill.name}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Progress Bar */}
-                  <div className="mb-2">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className={`text-sm font-medium ${
-                        isDark ? 'text-gray-400' : 'text-gray-500'
-                      }`}>Proficiency</span>
-                      <span className={`text-sm font-bold px-2 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md`}>
-                        {skill.level}%
-                      </span>
-                    </div>
-                    
-                    <div className={`w-full rounded-full h-2 overflow-hidden ${
-                      isDark ? 'bg-gray-600' : 'bg-gray-200'
-                    }`}>
-                      <div 
-                        className="h-2 rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-green-500 to-emerald-500 group-hover/skill:shadow-lg"
-                        style={{ 
-                          width: `${animatedLevels[skill.name] || skill.level}%`,
-                          transform: 'scaleY(1)'
-                        }}
+                      <Icon size={14} />
+                      <span>{tab.label}</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                          isSelected
+                            ? "bg-white/20 text-white"
+                            : isDark
+                            ? "bg-slate-700 text-slate-400"
+                            : "bg-slate-200 text-slate-600"
+                        }`}
                       >
-                      </div>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Search Box */}
+              <div className="relative w-full md:w-64">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search skill, tag, tool..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full pl-9 pr-4 py-2 text-xs rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    isDark
+                      ? "bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500"
+                      : "bg-white border-slate-200 text-slate-900 placeholder-slate-400 shadow-sm"
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Skills Cards Grid with 3D Tilt */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredSkills.map((skill, idx) => (
+                <motion.div
+                  key={skill.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: Math.min(idx * 0.04, 0.4) }}
+                >
+                  <TiltCard
+                    tiltDegree={8}
+                    scale={1.02}
+                    className={`h-full p-5 rounded-2xl border transition-all duration-300 ${
+                      isDark
+                        ? "bg-slate-800/60 border-slate-700/70 hover:border-purple-500/50 shadow-lg"
+                        : "bg-white border-slate-200 hover:border-purple-300 shadow-sm"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-sm text-slate-100 dark:text-white">
+                        {skill.name}
+                      </h3>
+                      <span className="text-xs font-bold font-mono text-purple-400">
+                        {skill.proficiency}%
+                      </span>
                     </div>
-                  </div>
-                  
-                  {/* Hover effect line */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-green-500 to-emerald-500 group-hover/skill:w-full transition-all duration-300"></div>
-                </div>
+
+                    {/* Animated Progress bar */}
+                    <div className="h-2 w-full bg-slate-700/40 rounded-full overflow-hidden mb-3">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.proficiency}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.1 }}
+                        className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 mb-3">
+                      <span className="font-medium text-slate-300 flex items-center gap-1">
+                        <CheckCircle size={12} className="text-emerald-400" />
+                        {skill.level}
+                      </span>
+                      <span className="truncate max-w-[160px]" title={skill.experience}>
+                        {skill.experience}
+                      </span>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1">
+                      {skill.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className={`text-[10px] px-2 py-0.5 rounded-md border ${
+                            isDark
+                              ? "bg-slate-900/60 border-slate-700 text-slate-400"
+                              : "bg-slate-50 border-slate-200 text-slate-600"
+                          }`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </TiltCard>
+                </motion.div>
               ))}
             </div>
+          </>
+        )}
+
+        {/* DevOps Infrastructure Stack Strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className={`mt-14 p-6 rounded-3xl border ${
+            isDark
+              ? "bg-slate-900/80 border-slate-800"
+              : "bg-gradient-to-r from-purple-50 via-slate-50 to-blue-50 border-slate-200"
+          }`}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                Core Production Pipeline
+              </span>
+              <h3 className="text-lg font-bold mt-1">Linux Server & DevOps Deployment Pipeline</h3>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
+                Trained in real-world deployment workflows: Ubuntu OS administration, automated Nginx reverse proxy configuration, and Git/GitLab version management.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-center">
+              {["Ubuntu Linux", "Nginx", "GitLab CI", "MySQL Optimization", "AWS EC2", "REST Security"].map(
+                (item) => (
+                  <motion.span
+                    key={item}
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm"
+                  >
+                    {item}
+                  </motion.span>
+                )
+              )}
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

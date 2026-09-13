@@ -1,151 +1,135 @@
-import { ArrowUp, Mail, MapPin, Github, Linkedin, Twitter, Heart, Instagram } from "lucide-react";
+import { ArrowUp, Mail, MapPin, Phone, Github, Linkedin, Instagram, Heart } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Footer = () => {
+  const { isDark } = useTheme();
   const [isScrolling, setIsScrolling] = useState(false);
 
   const scrollToTop = () => {
     setIsScrolling(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setIsScrolling(false), 1000);
   };
 
-  const socialLinks = [
-    { icon: Github, href: "https://github.com/PriteshBhuravane", label: "GitHub", color: "hover:text-gray-400" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/pritesh-bhuravane/", label: "LinkedIn", color: "hover:text-blue-400" },
-    { icon: Instagram, href: "https://www.instagram.com/pritesh_bhuravane__?igsh=N2M3ZHR2cnJlNmNk", label: "Twitter", color: "hover:text-sky-400" },
-  ];
-
   const quickLinks = [
-    { name: "About", href: "#about" },
+    { name: "About Me", href: "#about" },
+    { name: "Experience", href: "#experience" },
     { name: "Projects", href: "#projects" },
-    { name: "Skills", href: "#skills" },
+    { name: "Technical Skills", href: "#skills" },
+    { name: "Education", href: "#education" },
+    { name: "Achievements", href: "#achievements" },
     { name: "Contact", href: "#contact" },
   ];
 
-  return (
-    <footer className="bg-gray-950 text-white py-12 border-t border-gray-800 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-blue-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+  const socialLinks = [
+    { icon: Github, href: "https://github.com/PriteshBhuravane", label: "GitHub" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/pritesh-bhuravane/", label: "LinkedIn" },
+    { icon: Instagram, href: "https://www.instagram.com/pritesh_bhuravane__?igsh=N2M3ZHR2cnJlNmNk", label: "Instagram" },
+    { icon: Mail, href: "mailto:bhuravanepritesh@gmail.com", label: "Email" },
+  ];
 
+  return (
+    <footer
+      className={`py-16 border-t relative overflow-hidden transition-colors duration-300 ${
+        isDark
+          ? "bg-slate-950 border-slate-800 text-slate-200"
+          : "bg-slate-900 border-slate-800 text-slate-100"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="md:col-span-2">
-            <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-4 animate-gradient-x">
+        <div className="grid md:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
+          {/* Brand & Bio */}
+          <div className="md:col-span-6 space-y-4">
+            <h3 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
               Pritesh Bhuravane
             </h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Full Stack Web Developer passionate about creating amazing digital experiences that make a difference.
+            <p className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed">
+              Software Developer & DevOps Executive at Pleximus Inc. MCA graduate with 8.86 CGPA (3rd Rank) from FAMT Ratnagiri. Dedicated to scalable backend systems, server automation, and reliable cloud deployments.
             </p>
-            
-            {/* Contact Info with Icons */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-400 hover:text-purple-400 transition-colors duration-300 cursor-pointer group">
-                <Mail size={18} className="group-hover:scale-110 transition-transform duration-300" />
-                <span className="group-hover:translate-x-1 transition-transform duration-300">bhuravanepritesh@gmail.com</span>
+
+            <div className="space-y-2 pt-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-amber-400 flex-shrink-0" />
+                <span>Ratnagiri, Maharashtra, India</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-400 hover:text-purple-400 transition-colors duration-300 cursor-pointer group">
-                <MapPin size={18} className="group-hover:scale-110 transition-transform duration-300" />
-                <span className="group-hover:translate-x-1 transition-transform duration-300">Ratnagiri, Maharashtra</span>
+              <div className="flex items-center gap-2">
+                <Mail size={14} className="text-blue-400 flex-shrink-0" />
+                <a href="mailto:bhuravanepritesh@gmail.com" className="hover:text-purple-400">
+                  bhuravanepritesh@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-emerald-400 flex-shrink-0" />
+                <a href="tel:9405059038" className="hover:text-purple-400">
+                  +91 9405059038
+                </a>
               </div>
             </div>
           </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-white relative">
-              Quick Links
-              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 group-hover:w-full transition-all duration-300"></div>
+
+          {/* Quick Navigation Links */}
+          <div className="md:col-span-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">
+              Navigation
             </h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
+            <ul className="space-y-2 text-xs text-slate-400">
+              {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <a 
-                    href={link.href} 
-                    className="text-gray-400 hover:text-purple-400 transition-all duration-300 relative group inline-block"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                  <a
+                    href={link.href}
+                    className="hover:text-purple-400 transition-colors inline-block"
                   >
-                    <span className="relative z-10 group-hover:translate-x-2 transition-transform duration-300 inline-block">
-                      {link.name}
-                    </span>
-                    <span className="absolute inset-0 w-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 group-hover:w-full transition-all duration-300 rounded"></span>
+                    {link.name}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-          
-          {/* Social Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">Connect</h4>
-            <div className="flex space-x-4 mb-6">
-              {socialLinks.map((social, index) => (
+
+          {/* Connect & Social */}
+          <div className="md:col-span-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">
+              Connect
+            </h4>
+            <div className="flex flex-wrap gap-2.5 mb-6">
+              {socialLinks.map(({ icon: Icon, href, label }) => (
                 <a
-                  key={social.label}
-                  href={social.href}
-                  className={`p-3 bg-gray-800 rounded-full ${social.color} transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/25 group`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  aria-label={social.label}
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all duration-200 hover:scale-110"
                 >
-                  <social.icon size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
-            
-            {/* Newsletter Signup */}
-            <div className="mt-6">
-              <p className="text-sm text-gray-400 mb-3">Stay updated with my latest projects</p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors duration-300"
-                />
-                <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-r-md transition-all duration-300 hover:scale-105">
-                  <Mail size={16} />
-                </button>
-              </div>
-            </div>
+
+            <p className="text-[11px] text-slate-500">
+              Open to DevOps, Backend Engineering, and Full-Stack opportunities.
+            </p>
           </div>
         </div>
-        
-        {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center text-gray-500 mb-4 md:mb-0">
-              <span>© 2024 Pritesh Bhuravane. Made with</span>
-              <Heart size={16} className="mx-2 text-red-500 animate-pulse" />
-              <span>in India</span>
-            </div>
-            
-            {/* Scroll to Top Button */}
-            <button 
-              onClick={scrollToTop}
-              disabled={isScrolling}
-              className={`group relative overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 p-4 rounded-full transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 ${
-                isScrolling ? 'animate-bounce' : ''
-              }`}
-            >
-              <ArrowUp size={20} className={`transition-transform duration-300 ${
-                isScrolling ? 'animate-spin' : 'group-hover:-translate-y-1'
-              }`} />
-              
-              {/* Ripple Effect */}
-              <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
-              
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                Back to top
-              </div>
-            </button>
+
+        {/* Bottom copyright & Scroll to Top */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div className="flex items-center gap-1.5">
+            <span>© {new Date().getFullYear()} Pritesh Bhuravane. Crafted with</span>
+            <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
+            <span>in Maharashtra, India</span>
           </div>
-          
-          {/* Fun Stats */}
-         
+
+          <button
+            onClick={scrollToTop}
+            disabled={isScrolling}
+            className="p-3 rounded-2xl bg-slate-800/80 hover:bg-purple-600 text-slate-300 hover:text-white border border-slate-700 transition-all duration-200 hover:scale-110 flex items-center gap-2"
+            title="Back to top"
+          >
+            <span className="text-[11px] font-semibold">Back to Top</span>
+            <ArrowUp size={15} />
+          </button>
         </div>
       </div>
     </footer>
