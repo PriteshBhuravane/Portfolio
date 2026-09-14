@@ -192,6 +192,18 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="lg:col-span-5 space-y-6"
           >
+            <div className="relative overflow-hidden rounded-3xl border border-slate-200 shadow-xl dark:border-slate-800">
+              <img
+                src="/ChatGPT%20Image%20Sep%206,%202026,%2010_17_52%20PM.png"
+                alt="Pritesh Bhuravane in professional attire"
+                className="h-72 w-full object-cover object-top sm:h-80 lg:h-96"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 to-transparent px-5 pb-5 pt-12">
+                <p className="text-sm font-semibold text-white">Pritesh Suresh Bhuravane</p>
+                <p className="text-xs text-slate-300">Software Developer & DevOps Executive</p>
+              </div>
+            </div>
+
             {/* Quick Contact Card */}
             <div
               className={`p-6 rounded-3xl border shadow-xl ${

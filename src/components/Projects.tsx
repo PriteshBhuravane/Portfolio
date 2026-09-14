@@ -109,6 +109,7 @@ const projectsData: Project[] = [
       "Course curriculum management with progress tracking and completion certificates.",
       "Relational database schema modeled in MySQL with strict transaction integrity.",
     ],
+    demoUrl: "https://e-learning-5uto.onrender.com/",
     techStack: ["Python", "Django", "MySQL", "Razorpay API", "Bootstrap", "Git"],
     githubUrl: "https://github.com/PriteshBhuravane/Django-Elearning-Portal.git",
     featured: true,
