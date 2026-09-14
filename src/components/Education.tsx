@@ -281,7 +281,7 @@ const Education = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5"
             >
               {certifications.map((cert, index) => (
                 <motion.div
@@ -346,7 +346,7 @@ const Education = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid md:grid-cols-2 gap-6 sm:gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 lg:gap-8"
             >
               {filteredEducation.map((item, index) => {
                 const Icon = item.icon;

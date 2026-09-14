@@ -93,13 +93,13 @@ const Hero = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid lg:grid-cols-12 gap-10 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 lg:gap-10 items-center">
           {/* Left Column: Introductions & Actions */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-6 text-center lg:text-left space-y-6"
+            className="lg:col-span-6 text-center lg:text-left space-y-4 sm:space-y-5 md:space-y-6 w-full"
           >
             {/* Live System & Infrastructure Telemetry Banner (Eliminates blank space & adds live DevOps feel) */}
             <div className="flex items-center justify-center lg:justify-start">
@@ -291,7 +291,7 @@ const Hero = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-6 relative pt-12 sm:pt-14"
+            className="lg:col-span-6 relative pt-8 sm:pt-10 md:pt-12 lg:pt-14 w-full hidden lg:block"
           >
             {/* Floating Tech Badges around the right container with Laravel & PHP elevated cleanly above */}
             <AnimatedTechBadges

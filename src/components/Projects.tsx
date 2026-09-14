@@ -348,7 +348,7 @@ const Projects = () => {
         </div>
 
         {/* Projects Grid with Motion */}
-        <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6"> 
           <AnimatePresence>
             {filteredProjects.map((project) => {
               const isStarred = starredProjects[project.id];

@@ -133,14 +133,14 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 xl:gap-12">
           {/* Left Column: Direct Info & Social Cards */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-5 space-y-6"
+            className="md:col-span-6 lg:col-span-5 space-y-4 md:space-y-5 lg:space-y-6 w-full"
           >
             <div
               className={`p-6 sm:p-8 rounded-3xl border shadow-xl ${
@@ -271,7 +271,7 @@ const Contact = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-7"
+            className="md:col-span-6 lg:col-span-7 w-full"
           >
             <div
               className={`p-6 sm:p-8 rounded-3xl border shadow-xl ${
@@ -285,8 +285,8 @@ const Contact = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="text-xs font-semibold text-slate-400 block mb-1.5">
                       Your Name *

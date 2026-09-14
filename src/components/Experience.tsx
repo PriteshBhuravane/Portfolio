@@ -381,9 +381,9 @@ const Experience = () => {
 
         {/* View Mode: Split Cards View (Alternative) */}
         {viewMode === "cards" && (
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 items-start w-full">
           {/* Left Navigation Tabs */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="md:col-span-5 lg:col-span-4 space-y-3 md:space-y-4 w-full">
             <div className="space-y-3">
               {experiences.map((exp) => {
                 const Icon = exp.icon;
@@ -531,7 +531,7 @@ const Experience = () => {
           </div>
 
           {/* Right Detail Card */}
-          <div className="lg:col-span-8">
+          <div className="md:col-span-7 lg:col-span-8 w-full"> 
             <AnimatePresence mode="wait">
               {experiences
                 .filter((exp) => exp.id === activeTab)
